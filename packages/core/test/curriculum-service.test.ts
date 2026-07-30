@@ -50,6 +50,14 @@ const testModule = {
           estimatedPeriods: 8,
           outcomeIds: ["outcome-11"],
         },
+        {
+          id: "unit-shared",
+          sequence: 3,
+          title: "Ortak ünite",
+          gradeLevelIds: ["grade-10", "grade-11"],
+          estimatedPeriods: 8,
+          outcomeIds: ["outcome-shared-10", "outcome-shared-11"],
+        },
       ],
       outcomes: [
         {
@@ -68,6 +76,26 @@ const testModule = {
           unitId: "unit-11",
           title: "11. sınıf çıktısı",
           description: "11. sınıf öğrenme çıktısı.",
+          gradeLevelIds: ["grade-11"],
+          kind: "integrated",
+          evidenceHints: [],
+        },
+        {
+          id: "outcome-shared-10",
+          code: "TEST.SHARED.10",
+          unitId: "unit-shared",
+          title: "Ortak ünitenin 10. sınıf çıktısı",
+          description: "Ortak ünitenin 10. sınıf öğrenme çıktısı.",
+          gradeLevelIds: ["grade-10"],
+          kind: "integrated",
+          evidenceHints: [],
+        },
+        {
+          id: "outcome-shared-11",
+          code: "TEST.SHARED.11",
+          unitId: "unit-shared",
+          title: "Ortak ünitenin 11. sınıf çıktısı",
+          description: "Ortak ünitenin 11. sınıf öğrenme çıktısı.",
           gradeLevelIds: ["grade-11"],
           kind: "integrated",
           evidenceHints: [],
@@ -130,7 +158,22 @@ describe("Curriculum Service", () => {
           gradeLevelId: "grade-11",
         })
         .map((unit) => unit.id),
-    ).toEqual(["unit-11"]);
+    ).toEqual(["unit-11", "unit-shared"]);
+  });
+
+  it("ortak ünitede yalnızca istenen sınıfın çıktılarını listeler", () => {
+    const service = createService();
+
+    expect(
+      service
+        .listOutcomes({
+          moduleId: "test-module",
+          curriculumId: "test-curriculum",
+          gradeLevelId: "grade-10",
+          unitId: "unit-shared",
+        })
+        .map((outcome) => outcome.code),
+    ).toEqual(["TEST.SHARED.10"]);
   });
 
   it("geçersiz sınıfı başka bir sınıfa dönüştürmez", () => {
