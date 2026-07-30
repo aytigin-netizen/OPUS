@@ -121,3 +121,9 @@ export {
   createFoposCurriculumAdapter,
   type FoposCurriculumAdapter,
 } from "./curriculum-adapter.js";
+
+export {
+  createFoposPedagogicalAdapter,
+  type FoposPedagogicalAdapter,
+  type FoposPedagogicalRequest,
+} from "./pedagogical-adapter.js";
