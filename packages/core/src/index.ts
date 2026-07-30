@@ -30,3 +30,23 @@ export type {
   ModuleSnapshot,
   ModuleStatus,
 } from "./module-loader.js";
+
+export {
+  CurriculumService,
+  CurriculumServiceError,
+} from "./curriculum-service.js";
+
+export type {
+  CurriculumReference,
+  CurriculumServiceErrorCode,
+  GradeReference,
+  OutcomeReference,
+  UnitReference,
+} from "./curriculum-service.js";
+
+export type {
+  Curriculum,
+  CurriculumUnit,
+  GradeLevel,
+  LearningOutcome,
+} from "@opus/curriculum";
