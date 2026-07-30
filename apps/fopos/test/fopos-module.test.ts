@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createFoposCurriculumAdapter,
+  createFoposPedagogicalAdapter,
   foposModule,
 } from "../src/index.js";
 
@@ -92,5 +93,44 @@ describe("FOPOS modül adaptörü", () => {
     expect(() =>
       curriculum.getOutcome(10, "f10-u1", "FEL.11.1.1"),
     ).toThrow(/f10-u1 ünitesine ait değil/);
+  });
+
+  it("pedagojik isteği doğrulanmış FOPOS bağlamına ve felsefe kurallarına bağlar", () => {
+    const pedagogy = createFoposPedagogicalAdapter();
+    const decision = pedagogy.prepare({
+      id: "fopos-request-1",
+      intent: "lesson-plan",
+      grade: 10,
+      unitId: "f10-u1",
+      outcomeCode: "FEL.10.1.1",
+    });
+
+    expect(decision.context.reference).toEqual({
+      moduleId: "fopos",
+      curriculumId: "philosophy-tr-2024",
+      gradeLevelId: "grade-10",
+      unitId: "f10-u1",
+      outcomeCode: "FEL.10.1.1",
+    });
+    expect(decision.rules.map((rule) => rule.id)).toEqual([
+      "curriculum-first",
+      "preserve-philosophical-plurality",
+      "require-reasoning",
+    ]);
+    expect(decision.status).toBe("awaiting-teacher-approval");
+  });
+
+  it("geçersiz FOPOS seçiminde pedagojik üretimi başlatmaz", () => {
+    const pedagogy = createFoposPedagogicalAdapter();
+
+    expect(() =>
+      pedagogy.prepare({
+        id: "fopos-request-invalid",
+        intent: "lesson-plan",
+        grade: 10,
+        unitId: "f11-u1",
+        outcomeCode: "FEL.11.1.1",
+      }),
+    ).toThrow(/müfredat bağlamı çözümlenemedi/);
   });
 });
