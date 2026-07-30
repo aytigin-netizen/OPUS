@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "test": "pnpm --recursive test",
+    "test": "pnpm build && pnpm --recursive test",
     "typecheck": "tsc --build"
   },
   "devDependencies": {
