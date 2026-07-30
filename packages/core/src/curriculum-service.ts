@@ -108,8 +108,10 @@ export class CurriculumService {
   listOutcomes(reference: UnitReference): readonly LearningOutcome[] {
     const unit = this.getUnit(reference);
     const outcomeIds = new Set(unit.outcomeIds);
-    return this.getCurriculum(reference).outcomes.filter((outcome) =>
-      outcomeIds.has(outcome.id),
+    return this.getCurriculum(reference).outcomes.filter(
+      (outcome) =>
+        outcomeIds.has(outcome.id) &&
+        outcome.gradeLevelIds.includes(reference.gradeLevelId),
     );
   }
 
