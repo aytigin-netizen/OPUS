@@ -9,9 +9,9 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "pnpm --recursive build",
+    "build": "tsc --build",
     "test": "pnpm --recursive test",
-    "typecheck": "pnpm --recursive typecheck"
+    "typecheck": "tsc --build"
   },
   "devDependencies": {
     "typescript": "7.0.2",

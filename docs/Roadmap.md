@@ -1,43 +1,43 @@
 # OPUS Yol Haritası
 
-## Sprint 0 — Mimari temel
+## Sprint 0 — Mimari temel ✅
 
-**Amaç:** OPUS’un kapsamını, sınırlarını ve modül sözleşmesini kesinleştirmek.
-
-Çıktılar:
+Tamamlandı:
 
 - Depo iskeleti
 - Proje vizyonu
 - Mimari belge
-- Module Contract
+- Module Contract taslağı
 - Yol haritası
 - MIT lisansı
 
-Tamamlanma ölçütü: Belgeler Core–modül ayrımını açıkça tanımlar ve üretim kodu içermez.
+## Sprint 1 — Curriculum Engine ✅
 
-## Sprint 1 — Curriculum Engine
+Tamamlandı:
 
-**Amaç:** Müfredatın sürümlenebilir, doğrulanabilir ve modüllerden yüklenebilir ortak modelini oluşturmak.
-
-Planlanan çıktılar:
-
-- Müfredat şeması
-- Sürüm ve kaynak bilgisi
-- Sınıf, ders alanı, ünite ve öğrenme çıktısı ilişkileri
-- Doğrulama kuralları
-- Örnek ve sözleşme testleri
+- Müfredat ve kaynak şemaları
+- Sözleşme sürümü ve yaşam döngüsü
+- Sınıf, ünite ve öğrenme çıktısı ilişkileri
+- Çapraz veri bütünlüğü doğrulaması
+- Sorgu indeksleri
+- Sözleşme testleri
+- GitHub CI
 
 ## Sprint 2 — Module Loader
 
-**Amaç:** Module Contract uygulayan branş modüllerini güvenli biçimde keşfetmek ve kaydetmek.
+**Amaç:** Module Contract uygulayan branş modüllerini güvenli biçimde doğrulamak, kaydetmek ve yönetmek.
 
-Planlanan çıktılar:
+Uygulanan çıktılar:
 
-- Modül kaydı
+- Module Contract `1.0.0`
+- Modül kayıt sistemi
 - Sözleşme ve sürüm doğrulaması
 - Etkinleştirme/devre dışı bırakma
 - Hata izolasyonu
 - Modül sağlık görünürlüğü
+- Güvenli kaldırma
+- Türetilmiş ünite ve öğrenme çıktısı görünümleri
+- Testler ve CI doğrulaması
 
 ## Sprint 3 — FOPOS geçişi
 

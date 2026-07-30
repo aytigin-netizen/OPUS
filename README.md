@@ -34,9 +34,10 @@ OPUS/
 - `packages/`: Ortak çekirdek yetenekleri.
 - `docs/`: Vizyon, mimari, modül sözleşmesi ve yol haritası.
 
-## Mevcut geliştirme
+## Ortak üretim paketleri
 
-Sprint 1 ile ilk ortak üretim paketi olan [Curriculum Engine](docs/Curriculum_Engine.md) geliştirilmektedir. `@opus/curriculum` paketi branştan bağımsız müfredat şeması, kaynak izlenebilirliği, ünite–öğrenme çıktısı bütünlüğü ve çalışma zamanı doğrulaması sağlar.
+- [`@opus/curriculum`](packages/curriculum/README.md): Müfredat şeması, kaynak izlenebilirliği ve veri bütünlüğü.
+- [`@opus/core`](packages/core/README.md): Module Contract, Module Loader, registry, yaşam döngüsü ve sağlık izolasyonu.
 
 ### Geliştirme komutları
 
@@ -55,6 +56,7 @@ Node.js 24 ve `packageManager` alanında belirtilen pnpm sürümü kullanılır.
 - [OPUS Mimarisi](docs/OPUS_Architecture.md)
 - [Modül Sözleşmesi](docs/Module_Contract.md)
 - [Curriculum Engine](docs/Curriculum_Engine.md)
+- [Module Loader](docs/Module_Loader.md)
 - [Yol Haritası](docs/Roadmap.md)
 
 ## Mevcut FOPOS
