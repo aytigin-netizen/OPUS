@@ -50,3 +50,18 @@ export type {
   GradeLevel,
   LearningOutcome,
 } from "@opus/curriculum";
+
+export {
+  PedagogicalDecisionError,
+  PedagogicalDecisionService,
+} from "./pedagogical-decision-service.js";
+
+export type {
+  ApprovedPedagogicalDecision,
+  DecisionTraceEntry,
+  PedagogicalDecisionErrorCode,
+  PedagogicalRequest,
+  PendingPedagogicalDecision,
+  ResolvedPedagogicalContext,
+  TeacherApproval,
+} from "./pedagogical-decision-service.js";
