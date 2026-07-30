@@ -1,7 +1,10 @@
 import { ModuleLoader } from "@opus/core";
 import { describe, expect, it } from "vitest";
 
-import { foposModule } from "../src/index.js";
+import {
+  createFoposCurriculumAdapter,
+  foposModule,
+} from "../src/index.js";
 
 describe("FOPOS modül adaptörü", () => {
   it("Module Contract 1.0.0 ile doğrulanır ve yüklenir", () => {
@@ -62,5 +65,32 @@ describe("FOPOS modül adaptörü", () => {
       "preserve-philosophical-plurality",
       "require-reasoning",
     ]);
+  });
+
+  it("FOPOS seçimlerini Core Curriculum Service üzerinden çözer", () => {
+    const curriculum = createFoposCurriculumAdapter();
+
+    expect(curriculum.listGrades().map((grade) => grade.sequence)).toEqual([
+      10, 11,
+    ]);
+    expect(curriculum.listUnits(10)).toHaveLength(9);
+    expect(curriculum.listUnits(11)).toHaveLength(6);
+    expect(curriculum.getUnit(10, "f10-u1").title).toBe(
+      "FELSEFENİN DOĞASI",
+    );
+    expect(
+      curriculum.getOutcome(10, "f10-u1", "FEL.10.1.1").code,
+    ).toBe("FEL.10.1.1");
+  });
+
+  it("yanlış ünite ve çıktı seçimlerinde sessiz geri dönüş yapmaz", () => {
+    const curriculum = createFoposCurriculumAdapter();
+
+    expect(() => curriculum.getUnit(10, "f11-u1")).toThrow(
+      /grade-10 sınıf düzeyinde bulunamadı/,
+    );
+    expect(() =>
+      curriculum.getOutcome(10, "f10-u1", "FEL.11.1.1"),
+    ).toThrow(/f10-u1 ünitesine ait değil/);
   });
 });

@@ -116,3 +116,8 @@ const moduleCandidate = {
 } as const satisfies OpusModule;
 
 export const foposModule: OpusModule = parseOpusModule(moduleCandidate);
+
+export {
+  createFoposCurriculumAdapter,
+  type FoposCurriculumAdapter,
+} from "./curriculum-adapter.js";
