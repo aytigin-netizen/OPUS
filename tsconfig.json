@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/curriculum" },
-    { "path": "./packages/core" }
+    { "path": "./packages/core" },
+    { "path": "./apps/fopos" }
   ]
 }
