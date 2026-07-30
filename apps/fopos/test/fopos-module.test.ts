@@ -41,6 +41,21 @@ describe("FOPOS modül adaptörü", () => {
     });
   });
 
+  it("PDF satır sonlarından gelen eksik öğrenme çıktısı metinlerini reddeder", () => {
+    const outcomes = foposModule.curriculum[0]?.outcomes;
+
+    expect(
+      outcomes?.find((outcome) => outcome.code === "FEL.10.6.1")?.description,
+    ).toBe(
+      "Estetik ve sanat felsefesinin konusunu, kavramlarını ve problemlerini muhakeme edebilme",
+    );
+    expect(
+      outcomes?.find((outcome) => outcome.code === "FEL.10.8.1")?.description,
+    ).toBe(
+      "Din felsefesinin konusunu, kavramlarını ve problemlerini muhakeme edebilme",
+    );
+  });
+
   it("felsefeye özgü pedagojik AI sınırlarını modülde tutar", () => {
     expect(foposModule.ai_rules.rules.map((rule) => rule.id)).toEqual([
       "curriculum-first",
