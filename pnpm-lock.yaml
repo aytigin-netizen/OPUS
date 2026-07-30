@@ -15,6 +15,12 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(vite@8.1.5)
 
+  apps/fopos:
+    dependencies:
+      '@opus/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+
   packages/core:
     dependencies:
       '@opus/curriculum':
