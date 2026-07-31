@@ -18,5 +18,9 @@ Resmî program dağılımı:
 - 4 okul temelli planlama saati
 - 72 toplam ders saati
 
+Sprint 4.2 ile modülün seçim yüzeyi Core `CurriculumService` üzerinden
+çözümlenir. Adaptör tek resmî `secondary-education` bağlamını sabit tutar;
+geçersiz ünite veya öğrenme çıktısında sessiz bir varsayıma dönmez.
+
 Kaynak: T.C. Millî Eğitim Bakanlığı Talim ve Terbiye Kurulu Başkanlığı,
 `[TYMM] Ortaöğretim Psikoloji Dersi (2026)`, PID 2170.

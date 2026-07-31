@@ -199,3 +199,8 @@ const moduleCandidate = {
 } as const satisfies OpusModule;
 
 export const psyoposModule: OpusModule = parseOpusModule(moduleCandidate);
+
+export {
+  createPsyoposCurriculumAdapter,
+  type PsyoposCurriculumAdapter,
+} from "./curriculum-adapter.js";

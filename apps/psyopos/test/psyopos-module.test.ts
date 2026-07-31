@@ -1,7 +1,10 @@
 import { ModuleLoader } from "@opus/core";
 import { describe, expect, it } from "vitest";
 
-import { psyoposModule } from "../src/index.js";
+import {
+  createPsyoposCurriculumAdapter,
+  psyoposModule,
+} from "../src/index.js";
 
 describe("PSYOPOS modül temeli", () => {
   it("Module Contract 1.0.0 ile doğrulanır ve yüklenir", () => {
@@ -79,5 +82,40 @@ describe("PSYOPOS modül temeli", () => {
         }),
       ]),
     );
+  });
+
+  it("PSYOPOS seçimlerini Core Curriculum Service üzerinden çözer", () => {
+    const curriculum = createPsyoposCurriculumAdapter();
+
+    expect(curriculum.getEducationLevel()).toEqual({
+      id: "secondary-education",
+      label: "Ortaöğretim",
+      sequence: 0,
+    });
+    expect(curriculum.listUnits().map((unit) => unit.id)).toEqual([
+      "psk-u1",
+      "psk-u2",
+      "psk-u3",
+      "psk-u4",
+    ]);
+    expect(curriculum.getUnit("psk-u2").title).toBe("GELİŞİMİ ANLAMAK");
+    expect(curriculum.listOutcomes("psk-u2")).toHaveLength(4);
+    expect(curriculum.getOutcome("psk-u2", "PSK.2.3").title).toBe(
+      "İnsan zekâsı ile yapay zekâyı karşılaştırabilme",
+    );
+  });
+
+  it("yanlış ünite ve öğrenme çıktısında sessiz geri dönüş yapmaz", () => {
+    const curriculum = createPsyoposCurriculumAdapter();
+
+    expect(() => curriculum.getUnit("psk-u5")).toThrow(
+      /secondary-education sınıf düzeyinde bulunamadı/,
+    );
+    expect(() =>
+      curriculum.getOutcome("psk-u1", "PSK.2.1"),
+    ).toThrow(/psk-u1 ünitesine ait değil/);
+    expect(() =>
+      curriculum.getOutcome("psk-u1", "PSK.9.9"),
+    ).toThrow(/Öğrenme çıktısı bulunamadı/);
   });
 });
