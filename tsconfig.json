@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/curriculum" },
     { "path": "./packages/core" },
-    { "path": "./apps/fopos" }
+    { "path": "./apps/fopos" },
+    { "path": "./apps/psyopos" }
   ]
 }
