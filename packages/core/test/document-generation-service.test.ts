@@ -51,9 +51,24 @@ const moduleDefinition = {
       evidenceHints: [],
     }],
   }],
-  assessment: [],
+  assessment: [
+    {
+      id: "pilot-assessment",
+      name: "Pilot değerlendirmesi",
+      supportedOutcomeKinds: ["integrated"],
+    },
+  ],
   documents: [],
-  ai_rules: { version: "1.0.0", rules: [] },
+  ai_rules: {
+    version: "1.0.0",
+    rules: [
+      {
+        id: "pilot-rule",
+        description: "Pilot üretimde doğrulanmış müfredat bağlamını koru.",
+        effect: "require",
+      },
+    ],
+  },
   reports: [],
 } as const;
 
