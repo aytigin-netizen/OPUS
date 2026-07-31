@@ -204,3 +204,9 @@ export {
   createPsyoposCurriculumAdapter,
   type PsyoposCurriculumAdapter,
 } from "./curriculum-adapter.js";
+
+export {
+  createPsyoposPedagogicalAdapter,
+  type PsyoposPedagogicalAdapter,
+  type PsyoposPedagogicalRequest,
+} from "./pedagogical-adapter.js";
