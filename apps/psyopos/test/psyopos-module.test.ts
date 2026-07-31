@@ -1,8 +1,9 @@
-import { ModuleLoader } from "@opus/core";
+import { ModuleLoader, PedagogicalDecisionError } from "@opus/core";
 import { describe, expect, it } from "vitest";
 
 import {
   createPsyoposCurriculumAdapter,
+  createPsyoposPedagogicalAdapter,
   psyoposModule,
 } from "../src/index.js";
 
@@ -118,4 +119,99 @@ describe("PSYOPOS modül temeli", () => {
       curriculum.getOutcome("psk-u1", "PSK.9.9"),
     ).toThrow(/Öğrenme çıktısı bulunamadı/);
   });
+  it("pedagojik isteği doğrulanmış PSYOPOS bağlamına ve psikoloji kurallarına bağlar", () => {
+    const pedagogy = createPsyoposPedagogicalAdapter();
+    const decision = pedagogy.prepare({
+      id: "psyopos-request-1",
+      intent: "lesson-plan",
+      unitId: "psk-u2",
+      outcomeCode: "PSK.2.3",
+    });
+
+    expect(decision.context.reference).toEqual({
+      moduleId: "psyopos",
+      curriculumId: "psychology-tr-2026",
+      gradeLevelId: "secondary-education",
+      unitId: "psk-u2",
+      outcomeCode: "PSK.2.3",
+    });
+    expect(decision.rules.map((rule) => rule.id)).toEqual([
+      "curriculum-first",
+      "forbid-automated-diagnosis",
+      "require-evidence-boundaries",
+      "protect-psychological-privacy",
+    ]);
+    expect(decision.status).toBe("awaiting-teacher-approval");
+    expect(decision.trace.at(-1)?.step).toBe("teacher-approval-pending");
+  });
+
+  it("geçersiz PSYOPOS seçiminde karar ve üretim zincirini durdurur", () => {
+    const pedagogy = createPsyoposPedagogicalAdapter();
+
+    expect(() =>
+      pedagogy.prepare({
+        id: "psyopos-request-invalid",
+        intent: "lesson-plan",
+        unitId: "psk-u1",
+        outcomeCode: "PSK.2.1",
+      }),
+    ).toThrowError(
+      expect.objectContaining<Partial<PedagogicalDecisionError>>({
+        code: "CURRICULUM_RESOLUTION_FAILED",
+        curriculumErrorCode: "OUTCOME_UNIT_MISMATCH",
+      }),
+    );
+  });
+
+  it("yalnızca aynı karara ait öğretmen onayıyla üretim kapısını açar", () => {
+    const pedagogy = createPsyoposPedagogicalAdapter();
+    const decision = pedagogy.prepare({
+      id: "psyopos-request-approval",
+      intent: "assessment",
+      unitId: "psk-u3",
+      outcomeCode: "PSK.3.1",
+    });
+
+    expect(decision).not.toHaveProperty("approval");
+    expect(() =>
+      pedagogy.approve(decision, {
+        decisionId: "decision:other",
+        status: "approved",
+        teacherId: "teacher-1",
+        decidedAt: "2026-07-31T14:30:00+03:00",
+      }),
+    ).toThrow(/farklı bir karara ait/);
+
+    const approved = pedagogy.approve(decision, {
+      decisionId: decision.id,
+      status: "approved",
+      teacherId: "teacher-1",
+      decidedAt: "2026-07-31T14:30:00+03:00",
+      note: "Psikoloji dersi için uygundur.",
+    });
+
+    expect(approved.status).toBe("ready-for-generation");
+    expect(approved.approval.teacherId).toBe("teacher-1");
+    expect(approved.trace.at(-1)?.step).toBe("teacher-approved");
+  });
+
+  it("öğretmenin reddettiği PSYOPOS kararını üretime geçirmez", () => {
+    const pedagogy = createPsyoposPedagogicalAdapter();
+    const decision = pedagogy.prepare({
+      id: "psyopos-request-rejected",
+      intent: "assessment",
+      unitId: "psk-u4",
+      outcomeCode: "PSK.4.1",
+    });
+
+    expect(() =>
+      pedagogy.approve(decision, {
+        decisionId: decision.id,
+        status: "rejected",
+        teacherId: "teacher-1",
+        decidedAt: "2026-07-31T14:35:00+03:00",
+      }),
+    ).toThrow(/pedagojik kararı reddetti/);
+  });
+
 });

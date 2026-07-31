@@ -22,5 +22,9 @@ Sprint 4.2 ile modülün seçim yüzeyi Core `CurriculumService` üzerinden
 çözümlenir. Adaptör tek resmî `secondary-education` bağlamını sabit tutar;
 geçersiz ünite veya öğrenme çıktısında sessiz bir varsayıma dönmez.
 
+Sprint 4.3 ile pedagojik istekler doğrulanmış müfredat bağlamına ve PSYOPOS'un
+psikolojiye özgü AI kurallarına bağlanır. Üretim, açık öğretmen onayından önce
+başlatılamaz; reddedilen veya başka bir karara ait onay üretim kapısını açmaz.
+
 Kaynak: T.C. Millî Eğitim Bakanlığı Talim ve Terbiye Kurulu Başkanlığı,
 `[TYMM] Ortaöğretim Psikoloji Dersi (2026)`, PID 2170.
