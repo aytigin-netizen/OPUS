@@ -127,3 +127,10 @@ export {
   type FoposPedagogicalAdapter,
   type FoposPedagogicalRequest,
 } from "./pedagogical-adapter.js";
+
+export {
+  createFoposDailyPlanPilot,
+  type FoposDailyPlanDraft,
+  type FoposDailyPlanPilot,
+  type FoposDailyPlanPilotRequest,
+} from "./daily-plan-pilot.js";

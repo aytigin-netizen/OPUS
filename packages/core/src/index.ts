@@ -65,3 +65,17 @@ export type {
   ResolvedPedagogicalContext,
   TeacherApproval,
 } from "./pedagogical-decision-service.js";
+
+export {
+  DocumentGenerationError,
+  DocumentGenerationService,
+} from "./document-generation-service.js";
+
+export type {
+  DocumentGenerationContext,
+  DocumentGenerationErrorCode,
+  DocumentGenerationRequest,
+  DocumentGenerator,
+  GeneratedDocument,
+  GenerationProvenance,
+} from "./document-generation-service.js";
