@@ -27,6 +27,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
 
+  apps/logopos:
+    dependencies:
+      '@opus/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+
   packages/core:
     dependencies:
       '@opus/curriculum':
