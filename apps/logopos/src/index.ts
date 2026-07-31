@@ -2,7 +2,7 @@ import { parseOpusModule, type OpusModule } from "@opus/core";
 
 const GRADE_LEVEL_ID = "secondary-education";
 
-const outcomes = [
+const outcomes = ([
   ["MAN.1.1", "log-u1", "Mantığı formel bir bilim olarak sorgulayabilme"],
   ["MAN.1.2", "log-u1", "Mantığın tarihsel gelişim sürecini özetleyebilme"],
   ["MAN.1.3", "log-u1", "Mantığın temel kavramsal çerçevesini yapılandırabilme"],
