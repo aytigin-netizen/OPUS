@@ -83,6 +83,7 @@ describe("PSYOPOS modül temeli", () => {
       ]),
     );
   });
+
   it("PSYOPOS seçimlerini Core Curriculum Service üzerinden çözer", () => {
     const curriculum = createPsyoposCurriculumAdapter();
 
