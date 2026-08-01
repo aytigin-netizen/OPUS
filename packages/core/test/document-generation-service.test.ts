@@ -104,6 +104,7 @@ describe("Belge Üretim Servisi", () => {
         pending as unknown as ApprovedPedagogicalDecision,
         {
           id: "generation-1",
+          eventId: "event:generation-1",
           decisionId: pending.id,
           documentType: "daily-plan",
           payload: {},
@@ -132,6 +133,7 @@ describe("Belge Üretim Servisi", () => {
         approved,
         {
           id: "generation-2",
+          eventId: "event:generation-2",
           decisionId: "decision:other",
           documentType: "daily-plan",
           payload: {},
@@ -157,6 +159,7 @@ describe("Belge Üretim Servisi", () => {
       approved,
       {
         id: "generation-3",
+        eventId: "event:generation-3",
         decisionId: approved.id,
         documentType: "daily-plan",
         payload: { title: "Pilot plan" },
@@ -191,7 +194,7 @@ describe("Belge Üretim Servisi", () => {
     expect(() =>
       new DocumentGenerationService().generate(
         approved,
-        { id: "generation-invalid", decisionId: approved.id, documentType: "exam" as never, payload: {} },
+        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "exam" as never, payload: {} },
         { generate: () => ({}) },
       ),
     ).toThrowError(expect.objectContaining<Partial<DocumentGenerationError>>({ code: "UNSUPPORTED_DOCUMENT_TYPE" }));
@@ -208,12 +211,12 @@ describe("Belge Üretim Servisi", () => {
     const service = new DocumentGenerationService();
     const daily = service.generate(
       approved,
-      { id: "generation-daily", decisionId: approved.id, documentType: "daily-plan", payload: {} },
+      { id: "generation-daily", eventId: "event:daily", decisionId: approved.id, documentType: "daily-plan", payload: {} },
       { generate: () => ({ kind: "daily" }) },
     );
     const annual = service.generate(
       approved,
-      { id: "generation-annual", decisionId: approved.id, documentType: "annual-plan", payload: {} },
+      { id: "generation-annual", eventId: "event:annual", decisionId: approved.id, documentType: "annual-plan", payload: {} },
       { generate: () => ({ kind: "annual" }) },
     );
     expect(daily.provenance.eventId).not.toBe(annual.provenance.eventId);
