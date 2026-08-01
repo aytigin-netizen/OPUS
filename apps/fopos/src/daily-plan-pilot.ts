@@ -60,6 +60,7 @@ export function createFoposDailyPlanPilot(): FoposDailyPlanPilot {
         decision,
         {
           id: `${decision.requestId}:daily-plan`,
+          eventId: `event:${Date.now()}:${Math.random().toString(36).slice(2)}`,
           decisionId: decision.id,
           documentType: "daily-plan",
           payload: draft,
