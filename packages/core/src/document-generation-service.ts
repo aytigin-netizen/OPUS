@@ -13,6 +13,7 @@ import type {
 
 export interface DocumentGenerationRequest<TPayload> {
   readonly id: string;
+  readonly eventId: string;
   readonly decisionId: string;
   readonly documentType: DocumentType;
   readonly payload: TPayload;
@@ -93,6 +94,7 @@ export class DocumentGenerationService {
     }
 
     const requestId = requireText(request.id, "Belge üretim isteği kimliği");
+    const eventId = requireText(request.eventId, "Üretim olayı kimliği");
     const documentTypeCandidate = requireText(request.documentType, "Belge türü");
     if (!isDocumentType(documentTypeCandidate)) {
       throw new DocumentGenerationError(
@@ -101,7 +103,6 @@ export class DocumentGenerationService {
       );
     }
     const documentType = documentTypeCandidate;
-    const eventId = crypto.randomUUID();
     const context = Object.freeze({
       requestId,
       documentType,
