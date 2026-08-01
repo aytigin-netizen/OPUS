@@ -34,19 +34,17 @@ export interface DocumentGenerationRequest<TPayload> {
   readonly eventId: string;
   readonly decisionId: string;
   readonly documentType: DocumentType;
-  readonly artifactIntegrity: ArtifactIntegrity;
   readonly payload: TPayload;
 }
 
 export interface DocumentGenerationContext<TPayload> {
   readonly requestId: string;
   readonly documentType: DocumentType;
-  readonly artifactIntegrity: ArtifactIntegrity;
   readonly payload: TPayload;
   readonly decision: ApprovedPedagogicalDecision;
 }
 
-export interface DocumentGenerator<TPayload, TArtifact> {
+export interface DocumentGenerator<TPayload, TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }> {
   generate(context: DocumentGenerationContext<TPayload>): TArtifact;
 }
 
@@ -95,7 +93,7 @@ const requireText = (value: string, field: string): string => {
 };
 
 export class DocumentGenerationService {
-  generate<TPayload, TArtifact>(
+  generate<TPayload, TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }>(
     decision: ApprovedPedagogicalDecision,
     request: DocumentGenerationRequest<TPayload>,
     generator: DocumentGenerator<TPayload, TArtifact>,
@@ -124,20 +122,19 @@ export class DocumentGenerationService {
       );
     }
     const documentType = documentTypeCandidate;
-    if (!isArtifactIntegrity(request.artifactIntegrity)) {
-      throw new DocumentGenerationError(
-        "INVALID_GENERATION_REQUEST",
-        "Nihai belge için geçerli SHA-256 bütünlük özeti gerekir.",
-      );
-    }
     const context = Object.freeze({
       requestId,
       documentType,
-      artifactIntegrity: request.artifactIntegrity,
       payload: request.payload,
       decision,
     });
     const artifact = generator.generate(context);
+    if (!isArtifactIntegrity(artifact.artifactIntegrity)) {
+      throw new DocumentGenerationError(
+        "INVALID_GENERATION_REQUEST",
+        "Nihai belge üreticisi geçerli SHA-256 bütünlük özeti döndürmelidir.",
+      );
+    }
 
     return Object.freeze({
       status: "generated" as const,
@@ -150,7 +147,7 @@ export class DocumentGenerationService {
         teacherId: decision.approval.teacherId,
         approvedAt: decision.approval.decidedAt,
         curriculum: decision.context.reference,
-        artifactIntegrity: request.artifactIntegrity,
+        artifactIntegrity: artifact.artifactIntegrity,
       }),
     });
   }
