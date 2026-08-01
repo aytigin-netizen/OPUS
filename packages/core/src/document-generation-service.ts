@@ -1,4 +1,4 @@
-export const DOCUMENT_TYPES = Object.freeze(["daily-plan", "annual-plan"] as const);
+export const DOCUMENT_TYPES = Object.freeze(["daily-plan", "annual-plan", "exam"] as const);
 
 export type DocumentType = (typeof DOCUMENT_TYPES)[number];
 
