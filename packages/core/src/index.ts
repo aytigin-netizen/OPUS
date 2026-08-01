@@ -67,8 +67,10 @@ export type {
 } from "./pedagogical-decision-service.js";
 
 export {
+  DOCUMENT_TYPES,
   DocumentGenerationError,
   DocumentGenerationService,
+  isDocumentType,
 } from "./document-generation-service.js";
 
 export type {
@@ -76,6 +78,7 @@ export type {
   DocumentGenerationErrorCode,
   DocumentGenerationRequest,
   DocumentGenerator,
+  DocumentType,
   GeneratedDocument,
   GenerationProvenance,
 } from "./document-generation-service.js";

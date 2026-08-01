@@ -1,3 +1,11 @@
+export const DOCUMENT_TYPES = Object.freeze(["daily-plan", "annual-plan"] as const);
+
+export type DocumentType = (typeof DOCUMENT_TYPES)[number];
+
+export function isDocumentType(value: string): value is DocumentType {
+  return DOCUMENT_TYPES.includes(value as DocumentType);
+}
+
 import type {
   ApprovedPedagogicalDecision,
   ResolvedPedagogicalContext,
@@ -5,14 +13,15 @@ import type {
 
 export interface DocumentGenerationRequest<TPayload> {
   readonly id: string;
+  readonly eventId: string;
   readonly decisionId: string;
-  readonly documentType: string;
+  readonly documentType: DocumentType;
   readonly payload: TPayload;
 }
 
 export interface DocumentGenerationContext<TPayload> {
   readonly requestId: string;
-  readonly documentType: string;
+  readonly documentType: DocumentType;
   readonly payload: TPayload;
   readonly decision: ApprovedPedagogicalDecision;
 }
@@ -22,9 +31,10 @@ export interface DocumentGenerator<TPayload, TArtifact> {
 }
 
 export interface GenerationProvenance {
+  readonly eventId: string;
   readonly decisionId: string;
   readonly requestId: string;
-  readonly documentType: string;
+  readonly documentType: DocumentType;
   readonly teacherId: string;
   readonly approvedAt: string;
   readonly curriculum: ResolvedPedagogicalContext["reference"];
@@ -39,7 +49,8 @@ export interface GeneratedDocument<TArtifact> {
 export type DocumentGenerationErrorCode =
   | "DECISION_NOT_APPROVED"
   | "GENERATION_DECISION_MISMATCH"
-  | "INVALID_GENERATION_REQUEST";
+  | "INVALID_GENERATION_REQUEST"
+  | "UNSUPPORTED_DOCUMENT_TYPE";
 
 export class DocumentGenerationError extends Error {
   readonly code: DocumentGenerationErrorCode;
@@ -83,7 +94,15 @@ export class DocumentGenerationService {
     }
 
     const requestId = requireText(request.id, "Belge üretim isteği kimliği");
-    const documentType = requireText(request.documentType, "Belge türü");
+    const eventId = requireText(request.eventId, "Üretim olayı kimliği");
+    const documentTypeCandidate = requireText(request.documentType, "Belge türü");
+    if (!isDocumentType(documentTypeCandidate)) {
+      throw new DocumentGenerationError(
+        "UNSUPPORTED_DOCUMENT_TYPE",
+        `Desteklenmeyen belge türü: ${documentTypeCandidate}`,
+      );
+    }
+    const documentType = documentTypeCandidate;
     const context = Object.freeze({
       requestId,
       documentType,
@@ -96,6 +115,7 @@ export class DocumentGenerationService {
       status: "generated" as const,
       artifact,
       provenance: Object.freeze({
+        eventId,
         decisionId: decision.id,
         requestId,
         documentType,
