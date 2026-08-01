@@ -194,13 +194,13 @@ describe("Belge Üretim Servisi", () => {
     expect(() =>
       new DocumentGenerationService().generate(
         approved,
-        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "meeting-minutes" as never, payload: {} },
+        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "student-report" as never, payload: {} },
         { generate: () => ({}) },
       ),
     ).toThrowError(expect.objectContaining<Partial<DocumentGenerationError>>({ code: "UNSUPPORTED_DOCUMENT_TYPE" }));
   });
 
-  it("günlük plan, yıllık plan ve sınavı ayrı, değişmez üretim olayları olarak kaydeder", () => {
+  it("kayıtlı belge türlerini ayrı, değişmez üretim olayları olarak kaydeder", () => {
     const { decisions, pending } = createDecision();
     const approved = decisions.approve(pending, {
       decisionId: pending.id,
@@ -225,9 +225,16 @@ describe("Belge Üretim Servisi", () => {
       { generate: () => ({ kind: "exam-package" }) },
     );
     expect(daily.provenance.eventId).not.toBe(annual.provenance.eventId);
+    const meeting = service.generate(
+      approved,
+      { id: "generation-meeting", eventId: "event:meeting", decisionId: approved.id, documentType: "department-meeting-minutes", payload: {} },
+      { generate: () => ({ kind: "department-meeting-minutes" }) },
+    );
     expect(annual.provenance.eventId).not.toBe(exam.provenance.eventId);
+    expect(exam.provenance.eventId).not.toBe(meeting.provenance.eventId);
     expect(annual.provenance.documentType).toBe("annual-plan");
     expect(exam.provenance.documentType).toBe("exam");
+    expect(meeting.provenance.documentType).toBe("department-meeting-minutes");
   });
 
 });
