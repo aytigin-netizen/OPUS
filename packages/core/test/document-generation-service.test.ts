@@ -9,6 +9,12 @@ import {
   type ApprovedPedagogicalDecision,
 } from "../src/index.js";
 
+const integrity = {
+  algorithm: "SHA-256",
+  digest: "07ae38b93d8054d84aac37039c71ad114a8685a3857084d568f260ce69f0737f",
+  source: "final-artifact-bytes",
+} as const;
+
 const moduleDefinition = {
   contractVersion: "1.0.0",
   id: "pilot-module",
@@ -107,6 +113,7 @@ describe("Belge Üretim Servisi", () => {
           eventId: "event:generation-1",
           decisionId: pending.id,
           documentType: "daily-plan",
+          artifactIntegrity: integrity,
           payload: {},
         },
         generator,
@@ -136,6 +143,7 @@ describe("Belge Üretim Servisi", () => {
           eventId: "event:generation-2",
           decisionId: "decision:other",
           documentType: "daily-plan",
+          artifactIntegrity: integrity,
           payload: {},
         },
         { generate: () => ({}) },
@@ -162,6 +170,7 @@ describe("Belge Üretim Servisi", () => {
         eventId: "event:generation-3",
         decisionId: approved.id,
         documentType: "daily-plan",
+        artifactIntegrity: integrity,
         payload: { title: "Pilot plan" },
       },
       {
@@ -179,8 +188,10 @@ describe("Belge Üretim Servisi", () => {
         decisionId: approved.id,
         teacherId: "teacher-1",
         documentType: "daily-plan",
+        artifactIntegrity: integrity,
       },
     });
+    expect(generated.provenance.artifactIntegrity).toEqual(integrity);
   });
 
   it("yalnız kayıtlı belge türlerini kabul eder", () => {
@@ -194,7 +205,7 @@ describe("Belge Üretim Servisi", () => {
     expect(() =>
       new DocumentGenerationService().generate(
         approved,
-        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "student-report" as never, payload: {} },
+        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "student-report" as never, artifactIntegrity: integrity, payload: {} },
         { generate: () => ({}) },
       ),
     ).toThrowError(expect.objectContaining<Partial<DocumentGenerationError>>({ code: "UNSUPPORTED_DOCUMENT_TYPE" }));
@@ -211,23 +222,23 @@ describe("Belge Üretim Servisi", () => {
     const service = new DocumentGenerationService();
     const daily = service.generate(
       approved,
-      { id: "generation-daily", eventId: "event:daily", decisionId: approved.id, documentType: "daily-plan", payload: {} },
+      { id: "generation-daily", eventId: "event:daily", decisionId: approved.id, documentType: "daily-plan", artifactIntegrity: integrity, payload: {} },
       { generate: () => ({ kind: "daily" }) },
     );
     const annual = service.generate(
       approved,
-      { id: "generation-annual", eventId: "event:annual", decisionId: approved.id, documentType: "annual-plan", payload: {} },
+      { id: "generation-annual", eventId: "event:annual", decisionId: approved.id, documentType: "annual-plan", artifactIntegrity: integrity, payload: {} },
       { generate: () => ({ kind: "annual" }) },
     );
     const exam = service.generate(
       approved,
-      { id: "generation-exam", eventId: "event:exam", decisionId: approved.id, documentType: "exam", payload: {} },
+      { id: "generation-exam", eventId: "event:exam", decisionId: approved.id, documentType: "exam", artifactIntegrity: integrity, payload: {} },
       { generate: () => ({ kind: "exam-package" }) },
     );
     expect(daily.provenance.eventId).not.toBe(annual.provenance.eventId);
     const meeting = service.generate(
       approved,
-      { id: "generation-meeting", eventId: "event:meeting", decisionId: approved.id, documentType: "department-meeting-minutes", payload: {} },
+      { id: "generation-meeting", eventId: "event:meeting", decisionId: approved.id, documentType: "department-meeting-minutes", artifactIntegrity: integrity, payload: {} },
       { generate: () => ({ kind: "department-meeting-minutes" }) },
     );
     expect(annual.provenance.eventId).not.toBe(exam.provenance.eventId);
