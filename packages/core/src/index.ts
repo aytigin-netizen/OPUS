@@ -67,13 +67,17 @@ export type {
 } from "./pedagogical-decision-service.js";
 
 export {
+  ARTIFACT_INTEGRITY_ALGORITHM,
+  ARTIFACT_INTEGRITY_SOURCE,
   DOCUMENT_TYPES,
   DocumentGenerationError,
   DocumentGenerationService,
+  isArtifactIntegrity,
   isDocumentType,
 } from "./document-generation-service.js";
 
 export type {
+  ArtifactIntegrity,
   DocumentGenerationContext,
   DocumentGenerationErrorCode,
   DocumentGenerationRequest,

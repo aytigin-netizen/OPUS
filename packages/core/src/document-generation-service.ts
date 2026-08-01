@@ -2,6 +2,24 @@ export const DOCUMENT_TYPES = Object.freeze(["daily-plan", "annual-plan", "exam"
 
 export type DocumentType = (typeof DOCUMENT_TYPES)[number];
 
+export const ARTIFACT_INTEGRITY_ALGORITHM = "SHA-256" as const;
+export const ARTIFACT_INTEGRITY_SOURCE = "final-artifact-bytes" as const;
+
+export interface ArtifactIntegrity {
+  readonly algorithm: typeof ARTIFACT_INTEGRITY_ALGORITHM;
+  readonly digest: string;
+  readonly source: typeof ARTIFACT_INTEGRITY_SOURCE;
+}
+
+export function isArtifactIntegrity(value: unknown): value is ArtifactIntegrity {
+  if (!value || typeof value !== "object") return false;
+  const integrity = value as Partial<ArtifactIntegrity>;
+  return integrity.algorithm === ARTIFACT_INTEGRITY_ALGORITHM &&
+    integrity.source === ARTIFACT_INTEGRITY_SOURCE &&
+    typeof integrity.digest === "string" &&
+    /^[0-9a-f]{64}$/u.test(integrity.digest);
+}
+
 export function isDocumentType(value: string): value is DocumentType {
   return DOCUMENT_TYPES.includes(value as DocumentType);
 }
@@ -26,7 +44,7 @@ export interface DocumentGenerationContext<TPayload> {
   readonly decision: ApprovedPedagogicalDecision;
 }
 
-export interface DocumentGenerator<TPayload, TArtifact> {
+export interface DocumentGenerator<TPayload, TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }> {
   generate(context: DocumentGenerationContext<TPayload>): TArtifact;
 }
 
@@ -38,6 +56,7 @@ export interface GenerationProvenance {
   readonly teacherId: string;
   readonly approvedAt: string;
   readonly curriculum: ResolvedPedagogicalContext["reference"];
+  readonly artifactIntegrity: ArtifactIntegrity;
 }
 
 export interface GeneratedDocument<TArtifact> {
@@ -74,7 +93,7 @@ const requireText = (value: string, field: string): string => {
 };
 
 export class DocumentGenerationService {
-  generate<TPayload, TArtifact>(
+  generate<TPayload, TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }>(
     decision: ApprovedPedagogicalDecision,
     request: DocumentGenerationRequest<TPayload>,
     generator: DocumentGenerator<TPayload, TArtifact>,
@@ -110,6 +129,12 @@ export class DocumentGenerationService {
       decision,
     });
     const artifact = generator.generate(context);
+    if (!isArtifactIntegrity(artifact.artifactIntegrity)) {
+      throw new DocumentGenerationError(
+        "INVALID_GENERATION_REQUEST",
+        "Nihai belge üreticisi geçerli SHA-256 bütünlük özeti döndürmelidir.",
+      );
+    }
 
     return Object.freeze({
       status: "generated" as const,
@@ -122,6 +147,7 @@ export class DocumentGenerationService {
         teacherId: decision.approval.teacherId,
         approvedAt: decision.approval.decidedAt,
         curriculum: decision.context.reference,
+        artifactIntegrity: artifact.artifactIntegrity,
       }),
     });
   }

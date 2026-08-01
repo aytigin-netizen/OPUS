@@ -9,6 +9,12 @@ import {
   type ApprovedPedagogicalDecision,
 } from "../src/index.js";
 
+const integrity = {
+  algorithm: "SHA-256",
+  digest: "07ae38b93d8054d84aac37039c71ad114a8685a3857084d568f260ce69f0737f",
+  source: "final-artifact-bytes",
+} as const;
+
 const moduleDefinition = {
   contractVersion: "1.0.0",
   id: "pilot-module",
@@ -138,7 +144,7 @@ describe("Belge Üretim Servisi", () => {
           documentType: "daily-plan",
           payload: {},
         },
-        { generate: () => ({}) },
+        { generate: () => ({ artifactIntegrity: integrity }) },
       ),
     ).toThrowError(
       expect.objectContaining<Partial<DocumentGenerationError>>({
@@ -168,6 +174,7 @@ describe("Belge Üretim Servisi", () => {
         generate: ({ payload, decision }) => ({
           title: payload.title,
           outcomeCode: decision.context.outcome.code,
+          artifactIntegrity: integrity,
         }),
       },
     );
@@ -181,6 +188,7 @@ describe("Belge Üretim Servisi", () => {
         documentType: "daily-plan",
       },
     });
+    expect(generated.provenance.artifactIntegrity).toEqual(integrity);
   });
 
   it("yalnız kayıtlı belge türlerini kabul eder", () => {
@@ -194,8 +202,8 @@ describe("Belge Üretim Servisi", () => {
     expect(() =>
       new DocumentGenerationService().generate(
         approved,
-        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "student-report" as never, payload: {} },
-        { generate: () => ({}) },
+        { id: "generation-invalid", eventId: "event:invalid", decisionId: approved.id, documentType: "student-report" as never, artifactIntegrity: integrity, payload: {} },
+        { generate: () => ({ artifactIntegrity: integrity }) },
       ),
     ).toThrowError(expect.objectContaining<Partial<DocumentGenerationError>>({ code: "UNSUPPORTED_DOCUMENT_TYPE" }));
   });
@@ -211,24 +219,24 @@ describe("Belge Üretim Servisi", () => {
     const service = new DocumentGenerationService();
     const daily = service.generate(
       approved,
-      { id: "generation-daily", eventId: "event:daily", decisionId: approved.id, documentType: "daily-plan", payload: {} },
-      { generate: () => ({ kind: "daily" }) },
+      { id: "generation-daily", eventId: "event:daily", decisionId: approved.id, documentType: "daily-plan", artifactIntegrity: integrity, payload: {} },
+      { generate: () => ({ kind: "daily", artifactIntegrity: integrity }) },
     );
     const annual = service.generate(
       approved,
-      { id: "generation-annual", eventId: "event:annual", decisionId: approved.id, documentType: "annual-plan", payload: {} },
-      { generate: () => ({ kind: "annual" }) },
+      { id: "generation-annual", eventId: "event:annual", decisionId: approved.id, documentType: "annual-plan", artifactIntegrity: integrity, payload: {} },
+      { generate: () => ({ kind: "annual", artifactIntegrity: integrity }) },
     );
     const exam = service.generate(
       approved,
-      { id: "generation-exam", eventId: "event:exam", decisionId: approved.id, documentType: "exam", payload: {} },
-      { generate: () => ({ kind: "exam-package" }) },
+      { id: "generation-exam", eventId: "event:exam", decisionId: approved.id, documentType: "exam", artifactIntegrity: integrity, payload: {} },
+      { generate: () => ({ kind: "exam-package", artifactIntegrity: integrity }) },
     );
     expect(daily.provenance.eventId).not.toBe(annual.provenance.eventId);
     const meeting = service.generate(
       approved,
-      { id: "generation-meeting", eventId: "event:meeting", decisionId: approved.id, documentType: "department-meeting-minutes", payload: {} },
-      { generate: () => ({ kind: "department-meeting-minutes" }) },
+      { id: "generation-meeting", eventId: "event:meeting", decisionId: approved.id, documentType: "department-meeting-minutes", artifactIntegrity: integrity, payload: {} },
+      { generate: () => ({ kind: "department-meeting-minutes", artifactIntegrity: integrity }) },
     );
     expect(annual.provenance.eventId).not.toBe(exam.provenance.eventId);
     expect(exam.provenance.eventId).not.toBe(meeting.provenance.eventId);

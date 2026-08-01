@@ -1,6 +1,7 @@
 import {
   DocumentGenerationService,
   type ApprovedPedagogicalDecision,
+  type ArtifactIntegrity,
   type DocumentGenerator,
   type GeneratedDocument,
   type PendingPedagogicalDecision,
@@ -27,7 +28,7 @@ export interface FoposDailyPlanPilot {
     decision: PendingPedagogicalDecision,
     approval: TeacherApproval,
   ): ApprovedPedagogicalDecision;
-  generate<TArtifact>(
+  generate<TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }>(
     decision: ApprovedPedagogicalDecision,
     draft: FoposDailyPlanDraft,
     generator: DocumentGenerator<FoposDailyPlanDraft, TArtifact>,
@@ -51,7 +52,7 @@ export function createFoposDailyPlanPilot(): FoposDailyPlanPilot {
       decision: PendingPedagogicalDecision,
       approval: TeacherApproval,
     ) => pedagogy.approve(decision, approval),
-    generate: <TArtifact>(
+    generate: <TArtifact extends { readonly artifactIntegrity: ArtifactIntegrity }>(
       decision: ApprovedPedagogicalDecision,
       draft: FoposDailyPlanDraft,
       generator: DocumentGenerator<FoposDailyPlanDraft, TArtifact>,
