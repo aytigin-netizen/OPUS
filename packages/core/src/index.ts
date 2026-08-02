@@ -86,3 +86,17 @@ export type {
   GeneratedDocument,
   GenerationProvenance,
 } from "./document-generation-service.js";
+
+export {
+  GENERATION_ARCHIVE_CURSOR_VERSION,
+  GENERATION_ARCHIVE_PAGE_SIZES,
+  isGenerationArchiveCursor,
+  validateGenerationArchiveQuery,
+} from "./generation-archive-pagination.js";
+
+export type {
+  GenerationArchiveCursor,
+  GenerationArchivePage,
+  GenerationArchivePageSize,
+  GenerationArchiveQuery,
+} from "./generation-archive-pagination.js";
