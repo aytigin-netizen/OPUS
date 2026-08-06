@@ -6,8 +6,8 @@ import {
   validateGenerationArchiveQuery,
 } from "../src/index.js";
 
-const cursor = {
-  version: GENERATION_ARCHIVE_CURSOR_VERSION,
+const legacyCursor = {
+  version: "1.0.0" as const,
   generatedAt: "2026-08-01T20:00:44.000Z",
   eventId: "123e4567-e89b-42d3-a456-426614174000",
 } as const;
@@ -18,23 +18,84 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
       academicYear: "2026-2027",
       documentType: "daily-plan",
       pageSize: 50,
-      cursor,
+      cursor: legacyCursor,
     })).toEqual({
       academicYear: "2026-2027",
       documentType: "daily-plan",
       pageSize: 50,
-      cursor,
+      cursor: legacyCursor,
     });
-    expect(isGenerationArchiveCursor(cursor)).toBe(true);
+    expect(isGenerationArchiveCursor(legacyCursor)).toBe(true);
   });
 
-  it("kararsız veya eksik imleci reddeder", () => {
-    expect(isGenerationArchiveCursor({ generatedAt: cursor.generatedAt })).toBe(false);
-    expect(() => validateGenerationArchiveQuery({
-      academicYear: "2026-2027",
-      pageSize: 50,
-      cursor: { ...cursor, eventId: "event:unstable" },
-    })).toThrow("imleci geçersiz");
+  it("search sonuçları için queryScope ve bağlı scoped imleci doğrular", () => {
+    const scopedCursor = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        documentType: "daily-plan" as const,
+        curriculumSource: "T.C. Millî Eğitim Bakanlığı",
+        eventId: "123",
+        decisionId: "dec",
+        requestId: "req",
+        recordId: "rec",
+      },
+    };
+
+    expect(validateGenerationArchiveQuery({
+      pageSize: 20,
+      queryScope: scopedCursor.queryScope,
+      cursor: scopedCursor,
+    })).toEqual({
+      pageSize: 20,
+      queryScope: scopedCursor.queryScope,
+      cursor: scopedCursor,
+    });
+    expect(isGenerationArchiveCursor(scopedCursor)).toBe(true);
+  });
+
+  it("search-results scope içinde müfredat kaynağını tam eşleşme ile kabul eder", () => {
+    const validated = validateGenerationArchiveQuery({
+      pageSize: 20,
+      queryScope: {
+        type: "search-results" as const,
+        curriculumSource: "TR MEB",
+      },
+    });
+
+    expect(validated).toEqual({
+      pageSize: 20,
+      queryScope: {
+        type: "search-results",
+        curriculumSource: "TR MEB",
+      },
+    });
+  });
+
+  it("imleç sorgu kapsamı değiştiğinde reddeder", () => {
+    const scopedCursor = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        documentType: "daily-plan" as const,
+        eventId: "123",
+      },
+    };
+    expect(() =>
+      validateGenerationArchiveQuery({
+        pageSize: 20,
+        queryScope: {
+          type: "search-results" as const,
+          documentType: "daily-plan" as const,
+          eventId: "999",
+        },
+        cursor: scopedCursor,
+      }),
+    ).toThrow("sorgu kapsamı değiştiğinde reddedildi");
   });
 
   it("kayıtsız belge türünü, sınırsız sayfa boyutunu ve bozuk öğretim yılını reddeder", () => {
