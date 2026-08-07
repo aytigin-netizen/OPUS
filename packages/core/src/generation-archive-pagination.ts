@@ -183,7 +183,10 @@ export function isGenerationArchiveQueryScope(value: unknown): value is Generati
   if (scope.type === "search-results") {
     return (
       isAcademicYear(scope.academicYear) &&
-        (scope.documentType === undefined || (typeof scope.documentType === "string" && isDocumentType(scope.documentType))) &&
+      (scope.documentType === undefined || (typeof scope.documentType === "string" && isDocumentType(scope.documentType))) &&
+      (scope.curriculumSource === undefined || typeof scope.curriculumSource === "string") &&
+      (scope.eventId === undefined || typeof scope.eventId === "string") &&
+      (scope.decisionId === undefined || typeof scope.decisionId === "string") &&
       (scope.requestId === undefined || typeof scope.requestId === "string") &&
       (scope.recordId === undefined || typeof scope.recordId === "string")
     );

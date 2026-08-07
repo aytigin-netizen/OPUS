@@ -138,6 +138,45 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
     ).toThrow("İmleç sorgu kapsamına bağlı olmalıdır");
   });
 
+  it("1.1.0 scoped imleç numeric optional alanları reddeder", () => {
+    const invalidCurriculumSource = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        academicYear: "2026-2027",
+        curriculumSource: 123,
+      } as unknown,
+    };
+
+    const invalidEventId = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        academicYear: "2026-2027",
+        eventId: 456,
+      } as unknown,
+    };
+
+    const invalidDecisionId = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        academicYear: "2026-2027",
+        decisionId: 789,
+      } as unknown,
+    };
+
+    expect(isGenerationArchiveCursor(invalidCurriculumSource)).toBe(false);
+    expect(isGenerationArchiveCursor(invalidEventId)).toBe(false);
+    expect(isGenerationArchiveCursor(invalidDecisionId)).toBe(false);
+  });
+
   it("1.1.0 scoped sorgu, 1.0.0 legacy imleci reddeder", () => {
     const legacyCursorLocal = {
       version: "1.0.0" as const,
