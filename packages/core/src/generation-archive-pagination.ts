@@ -16,11 +16,11 @@ export type GenerationArchiveCursorVersion = (typeof GENERATION_ARCHIVE_CURSOR_V
 export interface FullAcademicYearExportQueryScope {
   readonly type: "academic-year";
   readonly academicYear: string;
-  readonly documentType?: DocumentType;
 }
 
 export interface SearchResultsExportQueryScope {
   readonly type: "search-results";
+  readonly academicYear: string;
   readonly documentType?: DocumentType;
   readonly curriculumSource?: string;
   readonly eventId?: string;
@@ -82,12 +82,12 @@ const normalizeQueryScope = (scope: GenerationArchiveQueryScope): string => {
     return JSON.stringify({
       type: scope.type,
       academicYear: scope.academicYear,
-      documentType: scope.documentType ?? null,
     });
   }
 
   return JSON.stringify({
     type: scope.type,
+    academicYear: scope.academicYear,
     documentType: scope.documentType ?? null,
     curriculumSource: scope.curriculumSource ?? null,
     eventId: scope.eventId ?? null,
@@ -157,22 +157,33 @@ export function isGenerationArchiveCursor(value: unknown): value is GenerationAr
 
 export function isGenerationArchiveQueryScope(value: unknown): value is GenerationArchiveQueryScope {
   if (!value || typeof value !== "object") return false;
-  const scope = value as Partial<GenerationArchiveQueryScope>;
+  const scope = value as {
+    type?: unknown;
+    academicYear?: unknown;
+    documentType?: unknown;
+    curriculumSource?: unknown;
+    eventId?: unknown;
+    decisionId?: unknown;
+    requestId?: unknown;
+    recordId?: unknown;
+  };
 
   if (scope.type === "academic-year") {
     return (
-      typeof scope.academicYear === "string" &&
-      /^\d{4}-\d{4}$/u.test(scope.academicYear) &&
-      (scope.documentType === undefined || isDocumentType(scope.documentType))
+      isAcademicYear(scope.academicYear) &&
+      scope.documentType === undefined &&
+      scope.curriculumSource === undefined &&
+      scope.eventId === undefined &&
+      scope.decisionId === undefined &&
+      scope.requestId === undefined &&
+      scope.recordId === undefined
     );
   }
 
   if (scope.type === "search-results") {
     return (
-      (scope.documentType === undefined || isDocumentType(scope.documentType)) &&
-      (scope.curriculumSource === undefined || typeof scope.curriculumSource === "string") &&
-      (scope.eventId === undefined || typeof scope.eventId === "string") &&
-      (scope.decisionId === undefined || typeof scope.decisionId === "string") &&
+      isAcademicYear(scope.academicYear) &&
+        (scope.documentType === undefined || (typeof scope.documentType === "string" && isDocumentType(scope.documentType))) &&
       (scope.requestId === undefined || typeof scope.requestId === "string") &&
       (scope.recordId === undefined || typeof scope.recordId === "string")
     );
@@ -181,16 +192,18 @@ export function isGenerationArchiveQueryScope(value: unknown): value is Generati
   return false;
 }
 
-const requireAcademicYear = (academicYear: unknown): string => {
-  if (typeof academicYear !== "string") {
-    throw new TypeError("Öğretim yılı filtresi dize olmalıdır.");
-  }
-  const normalized = academicYear.trim();
+const isAcademicYear = (value: unknown): value is string => {
+  if (typeof value !== "string") return false;
+  const normalized = value.trim();
   const match = /^(\d{4})-(\d{4})$/u.exec(normalized);
-  if (!match || Number(match[2]) !== Number(match[1]) + 1) {
+  return Boolean(match && Number(match[2]) === Number(match[1]) + 1);
+};
+
+const requireAcademicYear = (academicYear: unknown): string => {
+  if (!isAcademicYear(academicYear)) {
     throw new TypeError("Öğretim yılı filtresi geçersiz.");
   }
-  return normalized;
+  return academicYear.trim();
 };
 
 const validateScopedQueryScope = (scope: unknown): GenerationArchiveQueryScope => {
@@ -200,15 +213,15 @@ const validateScopedQueryScope = (scope: unknown): GenerationArchiveQueryScope =
 
   if (scope.type === "academic-year") {
     return Object.freeze({
-      ...scope,
+      type: scope.type,
       academicYear: requireAcademicYear(scope.academicYear),
-      ...(scope.documentType ? { documentType: scope.documentType } : {}),
     });
   }
 
   const searchScope = scope as SearchResultsExportQueryScope;
   return Object.freeze({
-    ...searchScope,
+    type: searchScope.type,
+    academicYear: requireAcademicYear(searchScope.academicYear),
     ...(searchScope.documentType ? { documentType: searchScope.documentType } : {}),
     ...(searchScope.curriculumSource ? { curriculumSource: requireExactString(searchScope.curriculumSource, "Müfredat kaynağı") } : {}),
     ...(searchScope.eventId ? { eventId: requirePrefixValue(searchScope.eventId, "Olay kimliği") } : {}),

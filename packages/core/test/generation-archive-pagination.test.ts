@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   GENERATION_ARCHIVE_CURSOR_VERSION,
+  GENERATION_ARCHIVE_PAGE_SIZES,
   isGenerationArchiveCursor,
   validateGenerationArchiveQuery,
 } from "../src/index.js";
@@ -28,13 +29,14 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
     expect(isGenerationArchiveCursor(legacyCursor)).toBe(true);
   });
 
-  it("search sonuçları için queryScope ve bağlı scoped imleci doğrular", () => {
+  it("search-results scope için queryScope ve bağlı scoped imleci doğrular", () => {
     const scopedCursor = {
       version: "1.1.0" as const,
       generatedAt: "2026-08-01T20:00:44.000Z",
       eventId: "123e4567-e89b-42d3-a456-426614174000",
       queryScope: {
         type: "search-results" as const,
+        academicYear: "2026-2027",
         documentType: "daily-plan" as const,
         curriculumSource: "T.C. Millî Eğitim Bakanlığı",
         eventId: "123",
@@ -56,11 +58,25 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
     expect(isGenerationArchiveCursor(scopedCursor)).toBe(true);
   });
 
-  it("search-results scope içinde müfredat kaynağını tam eşleşme ile kabul eder", () => {
+  it("full academic year scope yalnızca type ve academicYear kabul eder", () => {
+    expect(() =>
+      validateGenerationArchiveQuery({
+        pageSize: 20,
+        queryScope: {
+          type: "academic-year" as const,
+          academicYear: "2026-2027",
+          documentType: "daily-plan" as const,
+        },
+      }),
+    ).toThrow("QueryScope geçersiz");
+  });
+
+  it("search-results scope içinde academicYear ve curriculumSource kabul eder", () => {
     const validated = validateGenerationArchiveQuery({
       pageSize: 20,
       queryScope: {
         type: "search-results" as const,
+        academicYear: "2026-2027",
         curriculumSource: "TR MEB",
       },
     });
@@ -69,9 +85,80 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
       pageSize: 20,
       queryScope: {
         type: "search-results",
+        academicYear: "2026-2027",
         curriculumSource: "TR MEB",
       },
     });
+  });
+
+  it("search-results scope için academicYear zorunludur", () => {
+    expect(() =>
+      validateGenerationArchiveQuery({
+        pageSize: 20,
+        queryScope: {
+          type: "search-results" as const,
+          documentType: "daily-plan" as const,
+        },
+      }),
+    ).toThrow("QueryScope geçersiz");
+  });
+
+  it("kısa kimlik önekleri açıkça hata atar", () => {
+    expect(() =>
+      validateGenerationArchiveQuery({
+        pageSize: 20,
+        queryScope: {
+          type: "search-results" as const,
+          academicYear: "2026-2027",
+          eventId: "ab",
+        },
+      }),
+    ).toThrow("Olay kimliği");
+  });
+
+  it("1.0.0 sorgu, 1.1.0 scoped imleci reddeder", () => {
+    const scopedCursor = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+      queryScope: {
+        type: "search-results" as const,
+        academicYear: "2026-2027",
+        documentType: "daily-plan" as const,
+        eventId: "123",
+      },
+    };
+
+    expect(() =>
+      validateGenerationArchiveQuery({
+        academicYear: "2026-2027",
+        pageSize: 20,
+        cursor: scopedCursor,
+      }),
+    ).toThrow("İmleç sorgu kapsamına bağlı olmalıdır");
+  });
+
+  it("1.1.0 scoped sorgu, 1.0.0 legacy imleci reddeder", () => {
+    const legacyCursorLocal = {
+      version: "1.0.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+    };
+
+    expect(() =>
+      validateGenerationArchiveQuery({
+        pageSize: 20,
+        queryScope: {
+          type: "search-results" as const,
+          academicYear: "2026-2027",
+        },
+        cursor: legacyCursorLocal,
+      }),
+    ).toThrow("İmleç sorgu kapsamına bağlı olmalıdır");
+  });
+
+  it("public export GENERATION_ARCHIVE_PAGE_SIZES dışa aktarımını korur", () => {
+    expect(GENERATION_ARCHIVE_PAGE_SIZES).toEqual([20, 50, 100]);
   });
 
   it("imleç sorgu kapsamı değiştiğinde reddeder", () => {
@@ -81,6 +168,7 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
       eventId: "123e4567-e89b-42d3-a456-426614174000",
       queryScope: {
         type: "search-results" as const,
+        academicYear: "2026-2027",
         documentType: "daily-plan" as const,
         eventId: "123",
       },
@@ -90,6 +178,7 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
         pageSize: 20,
         queryScope: {
           type: "search-results" as const,
+          academicYear: "2026-2027",
           documentType: "daily-plan" as const,
           eventId: "999",
         },
