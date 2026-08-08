@@ -215,18 +215,46 @@ const requireAcademicYear = (academicYear: unknown): string => {
 };
 
 const validateScopedQueryScope = (scope: unknown): GenerationArchiveQueryScope => {
-  if (!isGenerationArchiveQueryScope(scope)) {
+  if (!scope || typeof scope !== "object" || Array.isArray(scope)) {
     throw new TypeError("QueryScope geçersiz.");
   }
 
-  if (scope.type === "academic-year") {
+  const candidate = scope as {
+    type?: unknown;
+    academicYear?: unknown;
+    documentType?: unknown;
+    curriculumSource?: unknown;
+    eventId?: unknown;
+    decisionId?: unknown;
+    requestId?: unknown;
+    recordId?: unknown;
+  };
+
+  if (candidate.type === "academic-year") {
+    if (!isGenerationArchiveQueryScope(candidate)) {
+      throw new TypeError("QueryScope geçersiz.");
+    }
     return Object.freeze({
-      type: scope.type,
-      academicYear: requireAcademicYear(scope.academicYear),
+      type: candidate.type,
+      academicYear: requireAcademicYear(candidate.academicYear),
     });
   }
 
-  const searchScope = scope as SearchResultsExportQueryScope;
+  if (
+    candidate.type !== "search-results" ||
+    !isAcademicYear(candidate.academicYear) ||
+    (candidate.documentType !== undefined &&
+      (typeof candidate.documentType !== "string" || !isDocumentType(candidate.documentType))) ||
+    (candidate.curriculumSource !== undefined && typeof candidate.curriculumSource !== "string") ||
+    (candidate.eventId !== undefined && typeof candidate.eventId !== "string") ||
+    (candidate.decisionId !== undefined && typeof candidate.decisionId !== "string") ||
+    (candidate.requestId !== undefined && typeof candidate.requestId !== "string") ||
+    (candidate.recordId !== undefined && typeof candidate.recordId !== "string")
+  ) {
+    throw new TypeError("QueryScope geçersiz.");
+  }
+
+  const searchScope = candidate as SearchResultsExportQueryScope;
   return Object.freeze({
     type: searchScope.type,
     academicYear: requireAcademicYear(searchScope.academicYear),
