@@ -89,14 +89,19 @@ export type {
 
 export {
   GENERATION_ARCHIVE_CURSOR_VERSION,
+  GENERATION_ARCHIVE_CURSOR_VERSIONS,
   GENERATION_ARCHIVE_PAGE_SIZES,
   isGenerationArchiveCursor,
   validateGenerationArchiveQuery,
 } from "./generation-archive-pagination.js";
 
 export type {
+  FullAcademicYearExportQueryScope,
   GenerationArchiveCursor,
   GenerationArchivePage,
   GenerationArchivePageSize,
   GenerationArchiveQuery,
+  GenerationArchiveQueryScope,
+  GenerationArchiveCursorVersion,
+  SearchResultsExportQueryScope,
 } from "./generation-archive-pagination.js";
