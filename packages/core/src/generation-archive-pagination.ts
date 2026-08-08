@@ -184,11 +184,16 @@ export function isGenerationArchiveQueryScope(value: unknown): value is Generati
     return (
       isAcademicYear(scope.academicYear) &&
       (scope.documentType === undefined || (typeof scope.documentType === "string" && isDocumentType(scope.documentType))) &&
-      (scope.curriculumSource === undefined || typeof scope.curriculumSource === "string") &&
-      (scope.eventId === undefined || typeof scope.eventId === "string") &&
-      (scope.decisionId === undefined || typeof scope.decisionId === "string") &&
-      (scope.requestId === undefined || typeof scope.requestId === "string") &&
-      (scope.recordId === undefined || typeof scope.recordId === "string")
+      (scope.curriculumSource === undefined ||
+        (typeof scope.curriculumSource === "string" && scope.curriculumSource.trim().length > 0)) &&
+      (scope.eventId === undefined ||
+        (typeof scope.eventId === "string" && prefixValuePattern.test(scope.eventId.trim()))) &&
+      (scope.decisionId === undefined ||
+        (typeof scope.decisionId === "string" && prefixValuePattern.test(scope.decisionId.trim()))) &&
+      (scope.requestId === undefined ||
+        (typeof scope.requestId === "string" && prefixValuePattern.test(scope.requestId.trim()))) &&
+      (scope.recordId === undefined ||
+        (typeof scope.recordId === "string" && prefixValuePattern.test(scope.recordId.trim())))
     );
   }
 
@@ -225,12 +230,12 @@ const validateScopedQueryScope = (scope: unknown): GenerationArchiveQueryScope =
   return Object.freeze({
     type: searchScope.type,
     academicYear: requireAcademicYear(searchScope.academicYear),
-    ...(searchScope.documentType ? { documentType: searchScope.documentType } : {}),
-    ...(searchScope.curriculumSource ? { curriculumSource: requireExactString(searchScope.curriculumSource, "Müfredat kaynağı") } : {}),
-    ...(searchScope.eventId ? { eventId: requirePrefixValue(searchScope.eventId, "Olay kimliği") } : {}),
-    ...(searchScope.decisionId ? { decisionId: requirePrefixValue(searchScope.decisionId, "Karar kimliği") } : {}),
-    ...(searchScope.requestId ? { requestId: requirePrefixValue(searchScope.requestId, "İstek kimliği") } : {}),
-    ...(searchScope.recordId ? { recordId: requirePrefixValue(searchScope.recordId, "Kayıt kimliği") } : {}),
+    ...(searchScope.documentType !== undefined ? { documentType: searchScope.documentType } : {}),
+    ...(searchScope.curriculumSource !== undefined ? { curriculumSource: requireExactString(searchScope.curriculumSource, "Müfredat kaynağı") } : {}),
+    ...(searchScope.eventId !== undefined ? { eventId: requirePrefixValue(searchScope.eventId, "Olay kimliği") } : {}),
+    ...(searchScope.decisionId !== undefined ? { decisionId: requirePrefixValue(searchScope.decisionId, "Karar kimliği") } : {}),
+    ...(searchScope.requestId !== undefined ? { requestId: requirePrefixValue(searchScope.requestId, "İstek kimliği") } : {}),
+    ...(searchScope.recordId !== undefined ? { recordId: requirePrefixValue(searchScope.recordId, "Kayıt kimliği") } : {}),
   });
 };
 
@@ -272,7 +277,11 @@ export function validateGenerationArchiveQuery(value: unknown): GenerationArchiv
     return Object.freeze({
       pageSize,
       queryScope,
-      ...(cursor ? { cursor: Object.freeze({ ...cursor }) } : {}),
+      ...(cursor ? {
+        cursor: isScopedCursor(cursor)
+          ? Object.freeze({ ...cursor, queryScope })
+          : Object.freeze({ ...cursor }),
+      } : {}),
     });
   }
 
