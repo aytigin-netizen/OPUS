@@ -278,9 +278,10 @@ export function validateGenerationArchiveQuery(value: unknown): GenerationArchiv
       pageSize,
       queryScope,
       ...(cursor ? {
-        cursor: isScopedCursor(cursor)
-          ? Object.freeze({ ...cursor, queryScope })
-          : Object.freeze({ ...cursor }),
+        cursor: Object.freeze({
+          ...(cursor as ScopedGenerationArchiveCursor),
+          queryScope,
+        }),
       } : {}),
     });
   }
