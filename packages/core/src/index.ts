@@ -105,3 +105,22 @@ export type {
   GenerationArchiveCursorVersion,
   SearchResultsExportQueryScope,
 } from "./generation-archive-pagination.js";
+
+export {
+  GENERATION_AUDIT_PACKAGE_INTEGRITY_ALGORITHM,
+  GENERATION_AUDIT_PACKAGE_SCHEMA_VERSION,
+  GENERATION_AUDIT_PACKAGE_SCHEMA_VERSIONS,
+  calculateGenerationAuditPackageDigest,
+  validateGenerationAuditPackage,
+} from "./generation-audit-package.js";
+
+export type {
+  GenerationAuditEvent,
+  GenerationAuditPackage,
+  GenerationAuditPackageIntegrity,
+  GenerationAuditPackageSchemaVersion,
+  GenerationAuditPackageValidationResult,
+  GenerationAuditPackageValidationStatus,
+  IntegrityProtectedGenerationAuditPackage,
+  LegacyGenerationAuditPackage,
+} from "./generation-audit-package.js";
