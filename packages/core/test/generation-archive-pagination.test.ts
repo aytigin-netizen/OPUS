@@ -116,6 +116,67 @@ describe("Üretim arşivi sayfalama sözleşmesi", () => {
     ).toThrow("Olay kimliği");
   });
 
+  it("boş arama filtrelerini reddeder", () => {
+    for (const field of ["curriculumSource", "eventId", "decisionId", "requestId", "recordId"] as const) {
+      expect(() =>
+        validateGenerationArchiveQuery({
+          pageSize: 20,
+          queryScope: {
+            type: "search-results",
+            academicYear: "2026-2027",
+            [field]: "",
+          },
+        }),
+      ).toThrow();
+    }
+  });
+
+  it("imleç koruması queryScope kurallarının tamamını uygular", () => {
+    const baseCursor = {
+      version: "1.1.0" as const,
+      generatedAt: "2026-08-01T20:00:44.000Z",
+      eventId: "123e4567-e89b-42d3-a456-426614174000",
+    };
+    expect(isGenerationArchiveCursor({
+      ...baseCursor,
+      queryScope: { type: "search-results", academicYear: "2026-2028", eventId: "123" },
+    })).toBe(false);
+    expect(isGenerationArchiveCursor({
+      ...baseCursor,
+      queryScope: { type: "search-results", academicYear: "2026-2027", eventId: "ab" },
+    })).toBe(false);
+    expect(isGenerationArchiveCursor({
+      ...baseCursor,
+      queryScope: { type: "search-results", academicYear: "2026-2027", eventId: "" },
+    })).toBe(false);
+  });
+
+  it("doğrulanan imlecin iç içe queryScope nesnesini kopyalar ve dondurur", () => {
+    const mutableScope = {
+      type: "search-results" as const,
+      academicYear: "2026-2027",
+      eventId: "123",
+    };
+    const validated = validateGenerationArchiveQuery({
+      pageSize: 20,
+      queryScope: mutableScope,
+      cursor: {
+        version: "1.1.0",
+        generatedAt: "2026-08-01T20:00:44.000Z",
+        eventId: "123e4567-e89b-42d3-a456-426614174000",
+        queryScope: mutableScope,
+      },
+    });
+    mutableScope.eventId = "999";
+    const validatedCursor = validated.cursor;
+    expect(validatedCursor && "queryScope" in validatedCursor
+      ? validatedCursor.queryScope.eventId
+      : undefined).toBe("123");
+    expect(validatedCursor && "queryScope" in validatedCursor
+      ? Object.isFrozen(validatedCursor.queryScope)
+      : false).toBe(true);
+  });
+
   it("1.0.0 sorgu, 1.1.0 scoped imleci reddeder", () => {
     const scopedCursor = {
       version: "1.1.0" as const,
