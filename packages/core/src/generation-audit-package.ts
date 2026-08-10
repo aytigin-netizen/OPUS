@@ -226,7 +226,9 @@ const sha256Hex = (value: string): string => {
   return hash.map((word) => word.toString(16).padStart(8, "0")).join("");
 };
 
-export function calculateCanonicalJsonDigest(value: unknown): string {\n  return sha256Hex(canonicalize(value));\n}
+export function calculateCanonicalJsonDigest(value: unknown): string {
+  return sha256Hex(canonicalize(value));
+}
 
 const withoutPackageIntegrity = (value: unknown): Record<string, unknown> => {
   if (!isRecord(value)) throw new TypeError("Denetim paketi nesne olmalıdır.");
