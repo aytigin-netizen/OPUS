@@ -11,7 +11,7 @@ import {
 const LOAD_PROFILES = Object.freeze([100, 1_000, 5_000, 10_000]);
 const CI_VALIDATION_BUDGET_MS = 30_000;
 
-const eventFor = (index: number) => ({
+const eventFor = (index: number): Record<string, unknown> => ({
   eventId: `pilot-2-4-event-${index.toString().padStart(5, "0")}`,
   requestId: `OPUS-OUT-pilot-2-4:${index}`,
   decisionId: `decision:OPUS-PR-pilot-2-4:r${index + 1}`,
