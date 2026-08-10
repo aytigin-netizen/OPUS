@@ -41,9 +41,76 @@ export interface GenerationAuditVerificationEvidence {
   };
 }
 
+export interface GenerationAuditVerificationEvidenceValidationResult {
+  readonly status: "valid" | "rejected";
+  readonly schemaVersion: typeof GENERATION_AUDIT_VERIFICATION_EVIDENCE_SCHEMA_VERSION | null;
+  readonly verifiedAt: string | null;
+  readonly sourcePackageSchemaVersion: string | null;
+  readonly sourcePackageDigest: string | null;
+  readonly evidenceStatus: GenerationAuditPackageValidationResult["status"] | null;
+  readonly eventCount: number;
+  readonly policyVersion: typeof GENERATION_AUDIT_VERIFICATION_POLICY_VERSION | null;
+  readonly computedDigest: string | null;
+  readonly errors: readonly string[];
+}
+
 type EvidenceWithoutIntegrity = Omit<GenerationAuditVerificationEvidence, "evidenceIntegrity">;
 
 const digestPattern = /^[0-9a-f]{64}$/u;
+const evidenceIssueCodePattern = /^AUDIT_(?:ERROR|WARNING)_[0-9A-F]{12}$/u;
+const forbiddenPersonalDataKeys = new Set([
+  "student", "students", "studentid", "studentname", "studentnumber", "schoolnumber",
+  "ogrenci", "ogrenciler", "ogrenciadi", "ogrencino", "tckimlikno", "nationalid",
+  "identitynumber", "email", "phone", "telephone", "address",
+]);
+
+const normalizeKey = (key: string): string =>
+  key.normalize("NFD").replace(/[\u0300-\u036f]/gu, "").replace(/[^a-z0-9]/giu, "")
+    .toLocaleLowerCase("en-US");
+
+const findForbiddenPersonalDataKeys = (value: unknown): string[] => {
+  const matches = new Set<string>();
+  const visit = (candidate: unknown, path: string): void => {
+    if (Array.isArray(candidate)) {
+      candidate.forEach((item, index) => visit(item, `${path}[${index}]`));
+      return;
+    }
+    if (!candidate || typeof candidate !== "object") return;
+    for (const [key, item] of Object.entries(candidate)) {
+      const childPath = path ? `${path}.${key}` : key;
+      if (
+        childPath !== "containsStudentPersonalData" &&
+        forbiddenPersonalDataKeys.has(normalizeKey(key))
+      ) matches.add(childPath);
+      visit(item, childPath);
+    }
+  };
+  visit(value, "");
+  return [...matches].sort();
+};
+
+const validateEvidenceIssues = (
+  value: unknown,
+  field: "errors" | "warnings",
+  errors: string[],
+): void => {
+  if (!Array.isArray(value)) {
+    errors.push(`result.${field} dizi olmalıdır.`);
+    return;
+  }
+  value.forEach((issue, index) => {
+    if (!isRecord(issue)) {
+      errors.push(`result.${field}[${index}] nesne olmalıdır.`);
+      return;
+    }
+    if (typeof issue.code !== "string" || !evidenceIssueCodePattern.test(issue.code)) {
+      errors.push(`result.${field}[${index}].code geçersizdir.`);
+    }
+    if (typeof issue.message !== "string" || issue.message.trim().length === 0) {
+      errors.push(`result.${field}[${index}].message boş olmayan dize olmalıdır.`);
+    }
+  });
+};
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -113,6 +180,141 @@ export function createGenerationAuditVerificationEvidence(input: {
       algorithm: GENERATION_AUDIT_PACKAGE_INTEGRITY_ALGORITHM,
       digest: calculateGenerationAuditVerificationEvidenceDigest(unsigned),
     }),
+  });
+}
+
+export function validateGenerationAuditVerificationEvidence(
+  value: unknown,
+): GenerationAuditVerificationEvidenceValidationResult {
+  const errors: string[] = [];
+  let schemaVersion: typeof GENERATION_AUDIT_VERIFICATION_EVIDENCE_SCHEMA_VERSION | null = null;
+  let verifiedAt: string | null = null;
+  let sourcePackageSchemaVersion: string | null = null;
+  let sourcePackageDigest: string | null = null;
+  let evidenceStatus: GenerationAuditPackageValidationResult["status"] | null = null;
+  let eventCount = 0;
+  let policyVersion: typeof GENERATION_AUDIT_VERIFICATION_POLICY_VERSION | null = null;
+  let computedDigest: string | null = null;
+
+  if (!isRecord(value)) {
+    return Object.freeze({
+      status: "rejected" as const,
+      schemaVersion,
+      verifiedAt,
+      sourcePackageSchemaVersion,
+      sourcePackageDigest,
+      evidenceStatus,
+      eventCount,
+      policyVersion,
+      computedDigest,
+      errors: Object.freeze(["Doğrulama kanıtı nesne olmalıdır."]),
+    });
+  }
+
+  if (value.schemaVersion === GENERATION_AUDIT_VERIFICATION_EVIDENCE_SCHEMA_VERSION) {
+    schemaVersion = value.schemaVersion;
+  } else {
+    errors.push("Doğrulama kanıtı şema sürümü desteklenmiyor.");
+  }
+
+  if (typeof value.verifiedAt === "string" && isTimestamp(value.verifiedAt)) {
+    verifiedAt = value.verifiedAt;
+  } else {
+    errors.push("verifiedAt geçerli zaman damgası olmalıdır.");
+  }
+
+  if (value.containsStudentPersonalData !== false) {
+    errors.push("containsStudentPersonalData değeri false olmalıdır.");
+  }
+
+  if (!isRecord(value.sourcePackage)) {
+    errors.push("sourcePackage nesne olmalıdır.");
+  } else {
+    if (value.sourcePackage.schemaVersion === null || typeof value.sourcePackage.schemaVersion === "string") {
+      sourcePackageSchemaVersion = value.sourcePackage.schemaVersion;
+    } else {
+      errors.push("sourcePackage.schemaVersion dize veya null olmalıdır.");
+    }
+    if (value.sourcePackage.digestAlgorithm !== GENERATION_AUDIT_PACKAGE_INTEGRITY_ALGORITHM) {
+      errors.push("sourcePackage.digestAlgorithm SHA-256 olmalıdır.");
+    }
+    if (
+      typeof value.sourcePackage.computedDigest === "string" &&
+      digestPattern.test(value.sourcePackage.computedDigest)
+    ) {
+      sourcePackageDigest = value.sourcePackage.computedDigest;
+    } else {
+      errors.push("sourcePackage.computedDigest geçerli SHA-256 özeti olmalıdır.");
+    }
+  }
+
+  if (!isRecord(value.result)) {
+    errors.push("result nesne olmalıdır.");
+  } else {
+    if (value.result.status === "valid" || value.result.status === "warning" || value.result.status === "rejected") {
+      evidenceStatus = value.result.status;
+    } else {
+      errors.push("result.status desteklenmiyor.");
+    }
+    if (Number.isInteger(value.result.eventCount) && Number(value.result.eventCount) >= 0) {
+      eventCount = Number(value.result.eventCount);
+    } else {
+      errors.push("result.eventCount negatif olmayan tam sayı olmalıdır.");
+    }
+    validateEvidenceIssues(value.result.errors, "errors", errors);
+    validateEvidenceIssues(value.result.warnings, "warnings", errors);
+  }
+
+  if (!isRecord(value.policy)) {
+    errors.push("policy nesne olmalıdır.");
+  } else {
+    if (value.policy.version === GENERATION_AUDIT_VERIFICATION_POLICY_VERSION) {
+      policyVersion = value.policy.version;
+    } else {
+      errors.push("policy.version desteklenmiyor.");
+    }
+    if (value.policy.maxEventCount !== GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT) {
+      errors.push("policy.maxEventCount geçerli politika sınırıyla uyuşmuyor.");
+    }
+    if (value.policy.maxFileSizeBytes !== GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES) {
+      errors.push("policy.maxFileSizeBytes geçerli politika sınırıyla uyuşmuyor.");
+    }
+  }
+
+  const personalDataKeys = findForbiddenPersonalDataKeys(value);
+  if (personalDataKeys.length > 0) {
+    errors.push(`Öğrenci kişisel verisi anahtarları bulundu: ${personalDataKeys.join(", ")}`);
+  }
+
+  if (
+    !isRecord(value.evidenceIntegrity) ||
+    value.evidenceIntegrity.algorithm !== GENERATION_AUDIT_PACKAGE_INTEGRITY_ALGORITHM ||
+    typeof value.evidenceIntegrity.digest !== "string" ||
+    !digestPattern.test(value.evidenceIntegrity.digest)
+  ) {
+    errors.push("evidenceIntegrity geçerli SHA-256 özeti taşımalıdır.");
+  } else {
+    try {
+      computedDigest = calculateGenerationAuditVerificationEvidenceDigest(value);
+      if (computedDigest !== value.evidenceIntegrity.digest) {
+        errors.push("Doğrulama kanıtı SHA-256 bütünlük özeti uyuşmuyor.");
+      }
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : "Doğrulama kanıtı özeti hesaplanamadı.");
+    }
+  }
+
+  return Object.freeze({
+    status: errors.length > 0 ? "rejected" as const : "valid" as const,
+    schemaVersion,
+    verifiedAt,
+    sourcePackageSchemaVersion,
+    sourcePackageDigest,
+    evidenceStatus,
+    eventCount,
+    policyVersion,
+    computedDigest,
+    errors: Object.freeze(errors),
   });
 }
 
