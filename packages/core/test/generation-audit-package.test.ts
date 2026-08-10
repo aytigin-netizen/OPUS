@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -128,5 +130,60 @@ describe("Denetim paketi geri doğrulama sözleşmesi", () => {
     const result = await validateGenerationAuditPackage("geçersiz");
     expect(result.status).toBe("rejected");
     expect(result.errors).toEqual(["Denetim paketi nesne olmalıdır."]);
+  });
+});
+
+
+type AuditParityFixture = {
+  readonly id: string;
+  readonly payload: unknown;
+  readonly expected: {
+    readonly status: "valid" | "warning" | "rejected";
+    readonly eventCount: number;
+    readonly computedDigest: string | null;
+    readonly errors: readonly string[];
+    readonly warnings: readonly string[];
+  };
+};
+
+const auditParityFixtures = JSON.parse(
+  readFileSync(new URL("./fixtures/generation-audit-parity.json", import.meta.url), "utf8"),
+) as {
+  readonly fixtureSet: string;
+  readonly containsRealStudentData: boolean;
+  readonly cases: readonly AuditParityFixture[];
+};
+
+describe("Pilot 2.3 OPUS/FOPOS denetim sözleşmesi paritesi", () => {
+  it("ortak fikstür kümesinin güvenlik ve kapsam beyanını doğrular", () => {
+    expect(auditParityFixtures.fixtureSet).toBe("opus-fopos-audit-parity-2.3");
+    expect(auditParityFixtures.containsRealStudentData).toBe(false);
+    expect(auditParityFixtures.cases.map(({ id }) => id)).toEqual([
+      "valid-1.2.0",
+      "reordered-equivalent",
+      "tampered-content",
+      "legacy-1.1.0",
+      "scope-and-academic-year-mismatch",
+      "event-count-mismatch",
+      "duplicate-event-id",
+      "nested-student-personal-data",
+    ]);
+  });
+
+  for (const fixture of auditParityFixtures.cases) {
+    it(`${fixture.id} için ortak beklenen sonucu üretir`, async () => {
+      const result = await validateGenerationAuditPackage(fixture.payload);
+      expect(result.status).toBe(fixture.expected.status);
+      expect(result.eventCount).toBe(fixture.expected.eventCount);
+      expect(result.computedDigest).toBe(fixture.expected.computedDigest);
+      expect(result.errors).toEqual(fixture.expected.errors);
+      expect(result.warnings).toEqual(fixture.expected.warnings);
+    });
+  }
+
+  it("alan sırası değişen eşdeğer pakette aynı SHA-256 özetini korur", () => {
+    const [valid, reordered] = auditParityFixtures.cases;
+    expect(valid?.expected.computedDigest).toMatch(/^[0-9a-f]{64}$/u);
+    expect(reordered?.expected.computedDigest).toBe(valid?.expected.computedDigest);
   });
 });
