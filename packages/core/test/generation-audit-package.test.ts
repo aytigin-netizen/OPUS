@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
+  GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT,
+  GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES,
   calculateGenerationAuditPackageDigest,
+  isGenerationAuditPackageFileSizeAllowed,
   validateGenerationAuditPackage,
 } from "../src/index.js";
 
@@ -186,4 +189,37 @@ describe("Pilot 2.3 OPUS/FOPOS denetim sözleşmesi paritesi", () => {
     expect(valid?.expected.computedDigest).toMatch(/^[0-9a-f]{64}$/u);
     expect(reordered?.expected.computedDigest).toBe(valid?.expected.computedDigest);
   });
+});
+
+
+describe("Pilot 2.4 denetim paketi güvenli sınırları", () => {
+  it("8 MiB dosya sınırını ortak sabit ve yardımcıyla uygular", () => {
+    expect(GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES).toBe(8 * 1024 * 1024);
+    expect(isGenerationAuditPackageFileSizeAllowed(8 * 1024 * 1024)).toBe(true);
+    expect(isGenerationAuditPackageFileSizeAllowed(8 * 1024 * 1024 + 1)).toBe(false);
+    expect(isGenerationAuditPackageFileSizeAllowed(-1)).toBe(false);
+  });
+
+  it("10.000 olay sınırını kabul edip 10.001 olayı erken reddeder", async () => {
+    expect(GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT).toBe(10_000);
+    const payload = unsignedPackage();
+    const oversizedEvents = Array.from(
+      { length: GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT + 1 },
+      (_, index) => ({ ...baseEvent, eventId: `pilot-2-4-limit-${index}` }),
+    );
+    const oversized = {
+      ...payload,
+      eventCount: oversizedEvents.length,
+      events: oversizedEvents,
+    };
+    const result = await validateGenerationAuditPackage({
+      ...oversized,
+      packageIntegrity: {
+        algorithm: "SHA-256",
+        digest: calculateGenerationAuditPackageDigest(oversized),
+      },
+    });
+    expect(result.status).toBe("rejected");
+    expect(result.errors).toContain("Denetim paketi en fazla 10.000 olay içerebilir.");
+  }, 60_000);
 });

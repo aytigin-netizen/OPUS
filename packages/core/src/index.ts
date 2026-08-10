@@ -108,9 +108,12 @@ export type {
 
 export {
   GENERATION_AUDIT_PACKAGE_INTEGRITY_ALGORITHM,
+  GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT,
+  GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES,
   GENERATION_AUDIT_PACKAGE_SCHEMA_VERSION,
   GENERATION_AUDIT_PACKAGE_SCHEMA_VERSIONS,
   calculateGenerationAuditPackageDigest,
+  isGenerationAuditPackageFileSizeAllowed,
   validateGenerationAuditPackage,
 } from "./generation-audit-package.js";
 
