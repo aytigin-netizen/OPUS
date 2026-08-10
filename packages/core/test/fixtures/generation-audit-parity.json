@@ -1,0 +1,431 @@
+{
+  "schemaVersion": "1.0.0",
+  "fixtureSet": "opus-fopos-audit-parity-2.3",
+  "containsRealStudentData": false,
+  "cases": [
+    {
+      "id": "valid-1.2.0",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 1,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "3854e724ec1ca7001e8e15f3381d33de56b1bd60a77d37bc64e5754344607be2"
+        }
+      },
+      "expected": {
+        "status": "valid",
+        "eventCount": 1,
+        "computedDigest": "3854e724ec1ca7001e8e15f3381d33de56b1bd60a77d37bc64e5754344607be2",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "reordered-equivalent",
+      "payload": {
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "eventCount": 1,
+        "containsStudentPersonalData": false,
+        "queryScope": {
+          "academicYear": "2026-2027",
+          "type": "academic-year"
+        },
+        "exportScope": "academic-year",
+        "academicYear": "2026-2027",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "schemaVersion": "1.2.0",
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "3854e724ec1ca7001e8e15f3381d33de56b1bd60a77d37bc64e5754344607be2"
+        }
+      },
+      "expected": {
+        "status": "valid",
+        "eventCount": 1,
+        "computedDigest": "3854e724ec1ca7001e8e15f3381d33de56b1bd60a77d37bc64e5754344607be2",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "tampered-content",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:01.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 1,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "3854e724ec1ca7001e8e15f3381d33de56b1bd60a77d37bc64e5754344607be2"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "eventCount": 1,
+        "computedDigest": "173701b91e0aac9c66a90dbee10283a4996b0f1c91e74d6124fa146cf1da0d11",
+        "errors": [
+          "Denetim paketi SHA-256 bütünlük özeti uyuşmuyor."
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "legacy-1.1.0",
+      "payload": {
+        "schemaVersion": "1.1.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ]
+      },
+      "expected": {
+        "status": "warning",
+        "eventCount": 1,
+        "computedDigest": null,
+        "errors": [],
+        "warnings": [
+          "Eski 1.1.0 paketi bütünlük özeti taşımıyor; içerik değişmezliği doğrulanamadı."
+        ]
+      }
+    },
+    {
+      "id": "scope-and-academic-year-mismatch",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "search-results",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2025-2026"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 1,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "c50685ff7afca9e6dfcf9f9d520de3fb30723f3c392ae4b298f75b41bb8c0fc6"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "eventCount": 1,
+        "computedDigest": "c50685ff7afca9e6dfcf9f9d520de3fb30723f3c392ae4b298f75b41bb8c0fc6",
+        "errors": [
+          "exportScope ile queryScope.type uyuşmuyor.",
+          "queryScope.academicYear paket öğretim yılıyla uyuşmuyor."
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "event-count-mismatch",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 2,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "958414b7ab0ee114835d14e54f615d3e1330fbc407eae6324deb097da61b862c"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "eventCount": 1,
+        "computedDigest": "958414b7ab0ee114835d14e54f615d3e1330fbc407eae6324deb097da61b862c",
+        "errors": [
+          "eventCount olay dizisinin uzunluğuyla uyuşmuyor."
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "duplicate-event-id",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 2,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          },
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "1d8def3cfd1276d9852d069401b31a3115ebe08571d7eba1a6e9fa9aef596140"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "eventCount": 2,
+        "computedDigest": "1d8def3cfd1276d9852d069401b31a3115ebe08571d7eba1a6e9fa9aef596140",
+        "errors": [
+          "Yinelenen olay kimliği: 123e4567-e89b-42d3-a456-426614174000"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "nested-student-personal-data",
+      "payload": {
+        "schemaVersion": "1.2.0",
+        "exportedAt": "2026-08-10T00:00:00.000Z",
+        "academicYear": "2026-2027",
+        "exportScope": "academic-year",
+        "queryScope": {
+          "type": "academic-year",
+          "academicYear": "2026-2027"
+        },
+        "containsStudentPersonalData": false,
+        "eventCount": 1,
+        "events": [
+          {
+            "eventId": "123e4567-e89b-42d3-a456-426614174000",
+            "requestId": "OPUS-OUT-parity:daily-plan",
+            "decisionId": "decision:OPUS-PR-parity:r1",
+            "recordId": "OPUS-PR-parity",
+            "revision": 1,
+            "documentType": "daily-plan",
+            "contractVersion": "1.2.0",
+            "approvedAt": "2026-08-09T20:00:00.000Z",
+            "generatedAt": "2026-08-09T20:01:00.000Z",
+            "curriculum": {
+              "moduleId": "fopos",
+              "curriculumId": "philosophy-tr-2024",
+              "gradeLevelId": "grade-10",
+              "unitId": "f10-u1",
+              "outcomeCode": "FEL.10.1.1"
+            },
+            "curriculumDatasetVersion": "2024.1",
+            "academicYear": "2026-2027",
+            "artifactIntegrity": null,
+            "metadata": {
+              "studentName": "PARITY_FIXTURE_SENTINEL"
+            }
+          }
+        ],
+        "packageIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "8b1060046ca71aa472be8113d519257923ddcd5ee4a4837e154cbabd85dd2636"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "eventCount": 1,
+        "computedDigest": "8b1060046ca71aa472be8113d519257923ddcd5ee4a4837e154cbabd85dd2636",
+        "errors": [
+          "Öğrenci kişisel verisi anahtarları bulundu: events[0].metadata.studentName"
+        ],
+        "warnings": []
+      }
+    }
+  ]
+}
