@@ -127,3 +127,16 @@ export type {
   IntegrityProtectedGenerationAuditPackage,
   LegacyGenerationAuditPackage,
 } from "./generation-audit-package.js";
+
+export {
+  GENERATION_AUDIT_VERIFICATION_EVIDENCE_SCHEMA_VERSION,
+  GENERATION_AUDIT_VERIFICATION_POLICY_VERSION,
+  calculateGenerationAuditVerificationEvidenceDigest,
+  createGenerationAuditVerificationEvidence,
+  validateGenerationAuditVerificationEvidenceIntegrity,
+} from "./generation-audit-verification-evidence.js";
+
+export type {
+  GenerationAuditVerificationEvidence,
+  GenerationAuditVerificationIssue,
+} from "./generation-audit-verification-evidence.js";
