@@ -133,10 +133,12 @@ export {
   GENERATION_AUDIT_VERIFICATION_POLICY_VERSION,
   calculateGenerationAuditVerificationEvidenceDigest,
   createGenerationAuditVerificationEvidence,
+  validateGenerationAuditVerificationEvidence,
   validateGenerationAuditVerificationEvidenceIntegrity,
 } from "./generation-audit-verification-evidence.js";
 
 export type {
   GenerationAuditVerificationEvidence,
+  GenerationAuditVerificationEvidenceValidationResult,
   GenerationAuditVerificationIssue,
 } from "./generation-audit-verification-evidence.js";
