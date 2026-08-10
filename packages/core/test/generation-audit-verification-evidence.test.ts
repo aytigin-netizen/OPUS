@@ -4,7 +4,9 @@ import {
   GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT,
   GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES,
   GENERATION_AUDIT_VERIFICATION_EVIDENCE_SCHEMA_VERSION,
+  calculateGenerationAuditVerificationEvidenceDigest,
   createGenerationAuditVerificationEvidence,
+  validateGenerationAuditVerificationEvidence,
   validateGenerationAuditVerificationEvidenceIntegrity,
   type GenerationAuditPackageValidationResult,
 } from "../src/index.js";
@@ -153,5 +155,112 @@ describe("Pilot 2.5 makine-okunur doğrulama kanıtı", () => {
     };
 
     expect(validateGenerationAuditVerificationEvidenceIntegrity(tampered)).toBe(false);
+  });
+});
+
+
+describe("Pilot 2.6 doğrulama kanıtını geri doğrulama", () => {
+  it("değişmemiş kanıtı doğrular ve taşınabilir özet alanlarını döndürür", () => {
+    const evidence = createGenerationAuditVerificationEvidence({
+      sourcePackage,
+      validation: validation("warning"),
+      verifiedAt,
+    });
+    const result = validateGenerationAuditVerificationEvidence(evidence);
+
+    expect(result.status).toBe("valid");
+    expect(result.schemaVersion).toBe("1.0.0");
+    expect(result.verifiedAt).toBe(verifiedAt);
+    expect(result.sourcePackageSchemaVersion).toBe("1.1.0");
+    expect(result.sourcePackageDigest).toBe(evidence.sourcePackage.computedDigest);
+    expect(result.evidenceStatus).toBe("warning");
+    expect(result.eventCount).toBe(1);
+    expect(result.policyVersion).toBe("1.0.0");
+    expect(result.computedDigest).toBe(evidence.evidenceIntegrity.digest);
+    expect(result.errors).toEqual([]);
+  });
+
+  it("değiştirilmiş kanıtı SHA-256 uyuşmazlığıyla reddeder", () => {
+    const evidence = createGenerationAuditVerificationEvidence({
+      sourcePackage,
+      validation: validation("valid"),
+      verifiedAt,
+    });
+    const result = validateGenerationAuditVerificationEvidence({
+      ...evidence,
+      result: { ...evidence.result, eventCount: 2 },
+    });
+
+    expect(result.status).toBe("rejected");
+    expect(result.errors).toContain("Doğrulama kanıtı SHA-256 bütünlük özeti uyuşmuyor.");
+  });
+
+  it("desteklenmeyen şema ve politika sürümünü reddeder", () => {
+    const evidence = createGenerationAuditVerificationEvidence({
+      sourcePackage,
+      validation: validation("valid"),
+      verifiedAt,
+    });
+    const result = validateGenerationAuditVerificationEvidence({
+      ...evidence,
+      schemaVersion: "2.0.0",
+      policy: { ...evidence.policy, version: "2.0.0" },
+    });
+
+    expect(result.status).toBe("rejected");
+    expect(result.errors).toContain("Doğrulama kanıtı şema sürümü desteklenmiyor.");
+    expect(result.errors).toContain("policy.version desteklenmiyor.");
+  });
+
+  it("geçerli özet taşısa bile kişisel veri anahtarını reddeder", () => {
+    const evidence = createGenerationAuditVerificationEvidence({
+      sourcePackage,
+      validation: validation("valid"),
+      verifiedAt,
+    });
+    const unsigned = {
+      ...evidence,
+      metadata: { studentName: "Örnek Öğrenci" },
+    };
+    const withIntegrity = {
+      ...unsigned,
+      evidenceIntegrity: {
+        algorithm: "SHA-256" as const,
+        digest: "",
+      },
+    };
+    withIntegrity.evidenceIntegrity.digest =
+      calculateGenerationAuditVerificationEvidenceDigest(withIntegrity);
+    const result = validateGenerationAuditVerificationEvidence(withIntegrity);
+
+    expect(result.status).toBe("rejected");
+    expect(result.errors.some((message) => message.includes("metadata.studentName"))).toBe(true);
+  });
+
+  it("politika sınırlarının değiştirilmesini reddeder", () => {
+    const evidence = createGenerationAuditVerificationEvidence({
+      sourcePackage,
+      validation: validation("rejected"),
+      verifiedAt,
+    });
+    const result = validateGenerationAuditVerificationEvidence({
+      ...evidence,
+      policy: {
+        ...evidence.policy,
+        maxEventCount: GENERATION_AUDIT_PACKAGE_MAX_EVENT_COUNT + 1,
+        maxFileSizeBytes: GENERATION_AUDIT_PACKAGE_MAX_FILE_SIZE_BYTES + 1,
+      },
+    });
+
+    expect(result.status).toBe("rejected");
+    expect(result.errors).toContain("policy.maxEventCount geçerli politika sınırıyla uyuşmuyor.");
+    expect(result.errors).toContain("policy.maxFileSizeBytes geçerli politika sınırıyla uyuşmuyor.");
+  });
+
+  it("ilkel değeri güvenle reddeder", () => {
+    expect(validateGenerationAuditVerificationEvidence("geçersiz")).toMatchObject({
+      status: "rejected",
+      errors: ["Doğrulama kanıtı nesne olmalıdır."],
+    });
   });
 });
