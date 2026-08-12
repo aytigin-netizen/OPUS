@@ -150,3 +150,14 @@ export {
 export type {
   GenerationAuditPackageEvidenceMatchResult,
 } from "./generation-audit-package-evidence-match.js";
+
+export {
+  GENERATION_AUDIT_ARTIFACT_MATCH_ALGORITHM,
+  GENERATION_AUDIT_ARTIFACT_MATCH_SOURCE,
+  matchGenerationArtifactToAuditPackage,
+} from "./generation-audit-package-artifact-match.js";
+
+export type {
+  GenerationAuditArtifactMatch,
+  GenerationAuditPackageArtifactMatchResult,
+} from "./generation-audit-package-artifact-match.js";
