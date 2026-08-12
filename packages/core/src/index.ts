@@ -142,3 +142,11 @@ export type {
   GenerationAuditVerificationEvidenceValidationResult,
   GenerationAuditVerificationIssue,
 } from "./generation-audit-verification-evidence.js";
+
+export {
+  matchGenerationAuditPackageToVerificationEvidence,
+} from "./generation-audit-package-evidence-match.js";
+
+export type {
+  GenerationAuditPackageEvidenceMatchResult,
+} from "./generation-audit-package-evidence-match.js";
