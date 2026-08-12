@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   calculateGenerationAuditPackageDigest,
+  calculateGenerationAuditVerificationEvidenceDigest,
   createGenerationAuditVerificationEvidence,
   matchGenerationAuditPackageToVerificationEvidence,
   validateGenerationAuditPackage,
@@ -141,7 +142,7 @@ describe("Pilot 2.7 kanıt-kaynak paket eşleştirmesi", () => {
       ...payload,
       evidenceIntegrity: {
         algorithm: "SHA-256",
-        digest: calculateGenerationAuditPackageDigest(payload),
+        digest: calculateGenerationAuditVerificationEvidenceDigest(payload),
       },
     };
 
