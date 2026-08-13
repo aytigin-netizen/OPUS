@@ -161,3 +161,17 @@ export type {
   GenerationAuditArtifactMatch,
   GenerationAuditPackageArtifactMatchResult,
 } from "./generation-audit-package-artifact-match.js";
+
+
+export {
+  PORTABLE_AUDIT_RESULT_POLICY_VERSION,
+  PORTABLE_AUDIT_RESULT_SCHEMA_VERSION,
+  calculatePortableAuditResultDigest,
+  createPortableAuditResult,
+  validatePortableAuditResult,
+} from "./portable-audit-result.js";
+
+export type {
+  PortableAuditResult,
+  PortableAuditResultValidation,
+} from "./portable-audit-result.js";
