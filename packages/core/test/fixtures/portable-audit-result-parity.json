@@ -1,0 +1,342 @@
+{
+  "schemaVersion": "1.0.0",
+  "fixtureSet": "opus-fopos-portable-audit-result-parity-3.1",
+  "containsRealStudentData": false,
+  "cases": [
+    {
+      "id": "valid-1.0.0",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b"
+        }
+      },
+      "expected": {
+        "status": "valid",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+        "errors": []
+      }
+    },
+    {
+      "id": "reordered-equivalent",
+      "payload": {
+        "status": "matched",
+        "sources": {
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "schemaVersion": "1.0.0",
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b"
+        },
+        "policy": {
+          "requiresUniqueArtifactMatch": true,
+          "version": "1.0.0"
+        },
+        "match": {
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "outcomeCode": "FEL.10.1.1",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "documentType": "daily-plan",
+          "eventId": "event-pilot-3-1"
+        },
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "containsStudentPersonalData": false
+      },
+      "expected": {
+        "status": "valid",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+        "errors": []
+      }
+    },
+    {
+      "id": "tampered-content",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.9.9",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "1e22728c693b785db3046f8e8aca7e8fedbcd8e0f6668cc8af915c2cbc7f45bc",
+        "errors": [
+          "Taşınabilir denetim sonucu SHA-256 bütünlük özeti uyuşmuyor."
+        ]
+      }
+    },
+    {
+      "id": "unsupported-schema-version",
+      "payload": {
+        "schemaVersion": "2.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "409df4adface3c4bf816f89a237c0b117fc08d0ec4f6ff5831ea7f0c7773979e"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": null,
+        "computedDigest": "409df4adface3c4bf816f89a237c0b117fc08d0ec4f6ff5831ea7f0c7773979e",
+        "errors": [
+          "Taşınabilir denetim sonucu şema sürümü desteklenmiyor."
+        ]
+      }
+    },
+    {
+      "id": "unsupported-policy-version",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "2.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "d7978e7ef309123d59b1861295d3e9e116e1c8a68b958388c335a88495ea2461"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "d7978e7ef309123d59b1861295d3e9e116e1c8a68b958388c335a88495ea2461",
+        "errors": [
+          "Denetim sonucu politikası geçersizdir."
+        ]
+      }
+    },
+    {
+      "id": "invalid-source-and-match-digest",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "not-a-digest"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "not-a-digest"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "083b3aaac0e2098eb1484a4a0ecc98d75b51cfde965777de58909dff31e650e3"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "083b3aaac0e2098eb1484a4a0ecc98d75b51cfde965777de58909dff31e650e3",
+        "errors": [
+          "sources.artifactDigest geçerli SHA-256 özeti olmalıdır.",
+          "match.digest geçerli SHA-256 özeti olmalıdır."
+        ]
+      }
+    },
+    {
+      "id": "missing-match-field",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "4ddbaf761ad4e728781dff288f7abc3cef5f17ec100f5555adcd698f595a877b"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "4ddbaf761ad4e728781dff288f7abc3cef5f17ec100f5555adcd698f595a877b",
+        "errors": [
+          "match.outcomeCode gereklidir."
+        ]
+      }
+    },
+    {
+      "id": "nested-student-personal-data",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "metadata": {
+          "studentName": "PARITY_FIXTURE_SENTINEL"
+        },
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "708d09dc9a814707cd4f2fc859a0edc59985a6c586a341899f0ddc8b91af0182"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "708d09dc9a814707cd4f2fc859a0edc59985a6c586a341899f0ddc8b91af0182",
+        "errors": [
+          "Kişisel veri veya dosya adı anahtarları bulundu: metadata.studentName"
+        ]
+      }
+    },
+    {
+      "id": "nested-file-path",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "createdAt": "2026-08-13T09:00:00.000Z",
+        "status": "matched",
+        "sources": {
+          "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "evidenceDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "artifactDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "match": {
+          "eventId": "event-pilot-3-1",
+          "documentType": "daily-plan",
+          "generatedAt": "2026-08-13T07:30:00.000Z",
+          "outcomeCode": "FEL.10.1.1",
+          "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresUniqueArtifactMatch": true
+        },
+        "containsStudentPersonalData": false,
+        "metadata": {
+          "filePath": "/private/plan.docx"
+        },
+        "resultIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "72192d04adaa6b15f980bb49c98bbcce889a5dc2be4d1ac4ea91ebf97df311dc"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "72192d04adaa6b15f980bb49c98bbcce889a5dc2be4d1ac4ea91ebf97df311dc",
+        "errors": [
+          "Kişisel veri veya dosya adı anahtarları bulundu: metadata.filePath"
+        ]
+      }
+    }
+  ]
+}
