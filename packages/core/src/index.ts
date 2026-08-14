@@ -175,3 +175,16 @@ export type {
   PortableAuditResult,
   PortableAuditResultValidation,
 } from "./portable-audit-result.js";
+
+export {
+  PORTABLE_AUDIT_VERIFICATION_RECEIPT_POLICY_VERSION,
+  PORTABLE_AUDIT_VERIFICATION_RECEIPT_SCHEMA_VERSION,
+  calculatePortableAuditVerificationReceiptDigest,
+  createPortableAuditVerificationReceipt,
+  validatePortableAuditVerificationReceipt,
+} from "./portable-audit-verification-receipt.js";
+
+export type {
+  PortableAuditVerificationReceipt,
+  PortableAuditVerificationReceiptValidation,
+} from "./portable-audit-verification-receipt.js";
