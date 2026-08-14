@@ -1,0 +1,309 @@
+{
+  "schemaVersion": "1.0.0",
+  "fixtureSet": "opus-fopos-portable-audit-verification-receipt-parity-3.2",
+  "containsRealStudentData": false,
+  "cases": [
+    {
+      "id": "valid-1.0.0",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "536203df09441b8c7d671735182b19eae1a6e5268d16a6fc6754bbe680d3e358"
+        }
+      },
+      "expected": {
+        "status": "valid",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "536203df09441b8c7d671735182b19eae1a6e5268d16a6fc6754bbe680d3e358",
+        "errors": []
+      }
+    },
+    {
+      "id": "reordered-equivalent",
+      "payload": {
+        "status": "valid",
+        "result": {
+          "outcomeCode": "FEL.10.1.1",
+          "documentType": "daily-plan",
+          "eventId": "event-pilot-3-2",
+          "policyVersion": "1.0.0",
+          "schemaVersion": "1.0.0",
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b"
+        },
+        "schemaVersion": "1.0.0",
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "536203df09441b8c7d671735182b19eae1a6e5268d16a6fc6754bbe680d3e358"
+        },
+        "policy": {
+          "requiresValidPortableResult": true,
+          "version": "1.0.0"
+        },
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "containsStudentPersonalData": false
+      },
+      "expected": {
+        "status": "valid",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "536203df09441b8c7d671735182b19eae1a6e5268d16a6fc6754bbe680d3e358",
+        "errors": []
+      }
+    },
+    {
+      "id": "tampered-content",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.2"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "536203df09441b8c7d671735182b19eae1a6e5268d16a6fc6754bbe680d3e358"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "1e3240b6ad215bb92e1cedd78b1a387c57f82cf1dc4b560965ec00fa4f4d652a",
+        "errors": [
+          "Doğrulama makbuzu SHA-256 bütünlük özeti uyuşmuyor."
+        ]
+      }
+    },
+    {
+      "id": "unsupported-schema-version",
+      "payload": {
+        "schemaVersion": "2.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "33deca993b819d44c6971666191dfaca373673a424070837aed0b91e6f62d6aa"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": null,
+        "computedDigest": "33deca993b819d44c6971666191dfaca373673a424070837aed0b91e6f62d6aa",
+        "errors": [
+          "Doğrulama makbuzu şema sürümü desteklenmiyor."
+        ]
+      }
+    },
+    {
+      "id": "unsupported-policy-version",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "2.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "17e98f3e2067f9651bf845329c4d5a5118d4f86666d4ae0fd5d53ea69f9c6d25"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "17e98f3e2067f9651bf845329c4d5a5118d4f86666d4ae0fd5d53ea69f9c6d25",
+        "errors": [
+          "Doğrulama makbuzu politikası geçersizdir."
+        ]
+      }
+    },
+    {
+      "id": "invalid-result-fields",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "not-a-digest",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": ""
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "76a0dd0b0c7871981fcdf0e963c7219fb4bcb324f619d9664ead873f9c49b6c8"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "76a0dd0b0c7871981fcdf0e963c7219fb4bcb324f619d9664ead873f9c49b6c8",
+        "errors": [
+          "result.digest geçerli SHA-256 özeti olmalıdır.",
+          "result.outcomeCode gereklidir."
+        ]
+      }
+    },
+    {
+      "id": "student-personal-data",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "studentName": "PARITY_FIXTURE_SENTINEL",
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "59473db02d9dc7e1e22292241806cb909c59111e9775bd07f7ab54bb5b24080a"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "59473db02d9dc7e1e22292241806cb909c59111e9775bd07f7ab54bb5b24080a",
+        "errors": [
+          "Kişisel veri veya dosya adı anahtarları bulundu: studentName",
+          "Makbuzda izin verilmeyen alanlar bulundu: studentName"
+        ]
+      }
+    },
+    {
+      "id": "source-file-path",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "filePath": "/private/result.json",
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "12ad4d89ec5ddc396db370acf0c5ed3674d1af15459707ffe10ed847d06ef283"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "12ad4d89ec5ddc396db370acf0c5ed3674d1af15459707ffe10ed847d06ef283",
+        "errors": [
+          "Kişisel veri veya dosya adı anahtarları bulundu: filePath",
+          "Makbuzda izin verilmeyen alanlar bulundu: filePath"
+        ]
+      }
+    },
+    {
+      "id": "embedded-source-result",
+      "payload": {
+        "schemaVersion": "1.0.0",
+        "verifiedAt": "2026-08-14T09:00:00.000Z",
+        "status": "valid",
+        "result": {
+          "digest": "149d4b23932f383bf2db00b1a6e7d14d5ad3f4c7719d8b75e4287ddee166256b",
+          "schemaVersion": "1.0.0",
+          "policyVersion": "1.0.0",
+          "eventId": "event-pilot-3-2",
+          "documentType": "daily-plan",
+          "outcomeCode": "FEL.10.1.1"
+        },
+        "policy": {
+          "version": "1.0.0",
+          "requiresValidPortableResult": true
+        },
+        "containsStudentPersonalData": false,
+        "sourceResult": {
+          "status": "matched",
+          "containsStudentPersonalData": false
+        },
+        "receiptIntegrity": {
+          "algorithm": "SHA-256",
+          "digest": "9a2ff270bcd2f4bfaa8800dfdd9fa830991ec60f430d77a7b404fc24ab7f1d88"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "schemaVersion": "1.0.0",
+        "computedDigest": "9a2ff270bcd2f4bfaa8800dfdd9fa830991ec60f430d77a7b404fc24ab7f1d88",
+        "errors": [
+          "Makbuzda izin verilmeyen alanlar bulundu: sourceResult"
+        ]
+      }
+    }
+  ]
+}
