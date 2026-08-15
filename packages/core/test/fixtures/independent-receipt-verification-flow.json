@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "fixtureSet": "opus-fopos-independent-receipt-verification-flow-3.3",
+  "containsRealStudentData": false,
+  "maxFileSizeBytes": 262144,
+  "cases": [
+    { "id": "valid-receipt-file", "sourceCaseId": "valid-1.0.0", "expectedStatus": "valid", "expectedErrors": [] },
+    { "id": "reordered-equivalent-file", "sourceCaseId": "reordered-equivalent", "expectedStatus": "valid", "expectedErrors": [] },
+    { "id": "tampered-receipt-file", "sourceCaseId": "tampered-content", "expectedStatus": "rejected", "expectedErrors": ["Doğrulama makbuzu SHA-256 bütünlük özeti uyuşmuyor."] },
+    { "id": "unsupported-schema-file", "sourceCaseId": "unsupported-schema-version", "expectedStatus": "rejected", "expectedErrors": ["Doğrulama makbuzu şema sürümü desteklenmiyor."] },
+    { "id": "unsupported-policy-file", "sourceCaseId": "unsupported-policy-version", "expectedStatus": "rejected", "expectedErrors": ["Doğrulama makbuzu politikası geçersizdir."] },
+    { "id": "invalid-result-fields-file", "sourceCaseId": "invalid-result-fields", "expectedStatus": "rejected", "expectedErrors": ["result.digest geçerli SHA-256 özeti olmalıdır.", "result.outcomeCode gereklidir."] },
+    { "id": "student-personal-data-file", "sourceCaseId": "student-personal-data", "expectedStatus": "rejected", "expectedErrors": ["Kişisel veri veya dosya adı anahtarları bulundu: studentName", "Makbuzda izin verilmeyen alanlar bulundu: studentName"] },
+    { "id": "source-file-path-file", "sourceCaseId": "source-file-path", "expectedStatus": "rejected", "expectedErrors": ["Kişisel veri veya dosya adı anahtarları bulundu: filePath", "Makbuzda izin verilmeyen alanlar bulundu: filePath"] },
+    { "id": "embedded-source-result-file", "sourceCaseId": "embedded-source-result", "expectedStatus": "rejected", "expectedErrors": ["Makbuzda izin verilmeyen alanlar bulundu: sourceResult"] },
+    { "id": "malformed-json-file", "inputKind": "malformed-json", "expectedStatus": "rejected", "expectedErrors": ["Dosya geçerli JSON içermiyor."] },
+    { "id": "oversized-json-file", "inputKind": "oversized-json", "expectedStatus": "rejected", "expectedErrors": ["Doğrulama makbuzu dosyası 256 KiB sınırını aşıyor."] }
+  ]
+}
