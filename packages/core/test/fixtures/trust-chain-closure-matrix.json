@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0.0",
+  "matrixId": "opus-fopos-trust-chain-closure-3.4",
+  "containsRealStudentData": false,
+  "producesDerivedEvidence": false,
+  "stages": [
+    {
+      "pilot": "3.0",
+      "step": "audit-package-match",
+      "fixtureSet": "opus-fopos-audit-parity-2.3",
+      "fixtureFile": "generation-audit-parity.json",
+      "supportedSchemaVersions": [
+        "1.2.0"
+      ],
+      "policyVersions": [],
+      "requiresNoStudentPersonalData": true
+    },
+    {
+      "pilot": "3.1",
+      "step": "portable-result",
+      "fixtureSet": "opus-fopos-portable-audit-result-parity-3.1",
+      "fixtureFile": "portable-audit-result-parity.json",
+      "supportedSchemaVersions": [
+        "1.0.0"
+      ],
+      "policyVersions": [
+        "1.0.0"
+      ],
+      "requiresNoStudentPersonalData": true
+    },
+    {
+      "pilot": "3.2",
+      "step": "verification-receipt",
+      "fixtureSet": "opus-fopos-portable-audit-verification-receipt-parity-3.2",
+      "fixtureFile": "portable-audit-verification-receipt-parity.json",
+      "supportedSchemaVersions": [
+        "1.0.0"
+      ],
+      "policyVersions": [
+        "1.0.0"
+      ],
+      "requiresNoStudentPersonalData": true
+    },
+    {
+      "pilot": "3.3",
+      "step": "independent-receipt-verification",
+      "fixtureSet": "opus-fopos-independent-receipt-verification-flow-3.3",
+      "fixtureFile": "independent-receipt-verification-flow.json",
+      "supportedSchemaVersions": [
+        "1.0.0"
+      ],
+      "policyVersions": [
+        "1.0.0"
+      ],
+      "maxFileSizeBytes": 262144,
+      "requiresNoStudentPersonalData": true
+    }
+  ],
+  "forbiddenKeyFragments": [
+    "studentName",
+    "studentNumber",
+    "fileName",
+    "filePath",
+    "sourceResult"
+  ],
+  "chainOrder": [
+    "audit-package-match",
+    "portable-result",
+    "verification-receipt",
+    "independent-receipt-verification"
+  ]
+}
